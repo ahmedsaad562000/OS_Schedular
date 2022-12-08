@@ -13,10 +13,10 @@ int main(int argc, char *argv[])
     // TODO Initialization
     // 1. Read the input files.
     Read_file(&Processes,argv[1]);
-    Processes_Node* curr=Processes.front;
+    struct Processes_Node* curr=Processes.front;
     while(curr!=NULL)
     {
-        printf(" %d %d %d %d \n",curr->Process_Data.Arrival_time,curr->Process_Data.Priority,curr->Process_Data.Running_time,curr->Process_Data.Process_ID);
+        printf(" %d %d %d %d \n",curr->Process_Data.Process_ID,curr->Process_Data.Arrival_time,curr->Process_Data.Running_time,curr->Process_Data.Priority);
         curr=curr->Next;
     }
     // 2. Read the chosen scheduling algorithm and its parameters, if there are any from the argument list.

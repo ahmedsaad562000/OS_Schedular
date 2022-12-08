@@ -12,6 +12,9 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <signal.h>
+#include <string.h>
+
+
 
 /**
  * ======================= Variables ========================
@@ -87,15 +90,15 @@ typedef struct{
 }Process;
 
 /* Node of Process */
-typedef struct{
+ struct Processes_Node{
     Process Process_Data;
-    struct Processes_Node* Next;
-}Processes_Node;
+    struct Processes_Node *Next;
+};
 
 typedef struct{
     /* Pointer to first & Last elements in the Queue */
-    Processes_Node *front = NULL;
-    Processes_Node *rear = NULL;
+    struct Processes_Node *front;
+    struct Processes_Node *rear;
 }Process_List;
 
 /*****************************************************************************/
@@ -103,6 +106,6 @@ typedef struct{
 /**************************** Functions Declarations **************************/
 
 /* Function to Insert Process into Queue */
-Processes_Node* Insert_Process(Process_List *Queue, Process *N);
-
+struct Processes_Node* Insert_Process(Process_List *Queue, Process *N);
+struct Processes_Node *Insert_Circular_Queue(Process_List *Queue, Process *N);
 #endif
