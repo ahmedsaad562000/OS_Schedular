@@ -13,6 +13,19 @@
 #include <unistd.h>
 #include <signal.h>
 
+/**
+ * ======================= Variables ========================
+ */
+typedef short bool;
+#define true 1
+#define false 0
+
+#define SHKEY 300
+
+///==============================
+//don't mess with this variable//
+int *shmaddr; //
+
 int getClk()
 {
     return *shmaddr;
@@ -76,7 +89,7 @@ typedef struct{
 /* Node of Process */
 typedef struct{
     Process Process_Data;
-    Process_Node* Next;
+    struct Processes_Node* Next;
 }Processes_Node;
 
 typedef struct{
@@ -84,4 +97,12 @@ typedef struct{
     Processes_Node *front = NULL;
     Processes_Node *rear = NULL;
 }Process_List;
+
+/*****************************************************************************/
+
+/**************************** Functions Declarations **************************/
+
+/* Function to Insert Process into Queue */
+Processes_Node* Insert_Process(Process_List *Queue, Process *N);
+
 #endif

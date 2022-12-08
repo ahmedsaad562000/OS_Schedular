@@ -1,26 +1,4 @@
-#include <stdio.h> //if you don't use scanf/printf change this include
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/file.h>
-#include <sys/ipc.h>
-#include <sys/shm.h>
-#include <sys/sem.h>
-#include <sys/msg.h>
-#include <sys/wait.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <signal.h>
-
-typedef short bool;
-#define true 1
-#define false 0
-
-#define SHKEY 300
-
-///==============================
-//don't mess with this variable//
-int *shmaddr; //
-
+#include "main_header.h"
 //===============================
 
 
@@ -59,10 +37,3 @@ Processes_Node* Insert_Process(Process_List *Queue, Process *N)
 
     return link;
 }
-
-/* Function to Insert Process into Queue using Running Time */
-Processes_Node *Insert_Process_Running_Time(Process_List *Queue, Process *N)
-{
-
-}
-

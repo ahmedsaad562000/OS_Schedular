@@ -1,5 +1,10 @@
 #include "headers.h"
 
+/*
+* Variables
+*/
+Process_List Processes;
+
 void clearResources(int);
 
 int main(int argc, char *argv[])
@@ -7,6 +12,13 @@ int main(int argc, char *argv[])
     signal(SIGINT, clearResources);
     // TODO Initialization
     // 1. Read the input files.
+    Read_file(&Processes,argv[1]);
+    Processes_Node* curr=Processes.front;
+    while(curr!=NULL)
+    {
+        printf(" %d %d %d %d \n",curr->Process_Data.Arrival_time,curr->Process_Data.Priority,curr->Process_Data.Running_time,curr->Process_Data.Process_ID);
+        curr=curr->Next;
+    }
     // 2. Read the chosen scheduling algorithm and its parameters, if there are any from the argument list.
     // 3. Initiate and create the scheduler and clock processes.
     // 4. Use this function after creating the clock process to initialize clock.
