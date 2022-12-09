@@ -27,16 +27,16 @@ int main(int argc, char *argv[])
     // 1. Read the input files.
     Read_file(&Processes,argv[1]);
     struct Processes_Node* curr=Processes.front;
-    while(curr!=NULL)
+    /*while(curr!=NULL)
     {
         printf(" %d %d %d %d \n",curr->Process_Data.Process_ID,curr->Process_Data.Arrival_time,curr->Process_Data.Running_time,curr->Process_Data.Priority);
         curr=curr->Next;
-    }
+    }*/
     // 2. Read the chosen scheduling algorithm and its parameters, if there are any from the argument list.
     
     mode = atoi(argv[1]);
     
-    if(mode == RR)
+    if(mode == RR || mode == MLFL)
     {
         q= atoi(argv[2]);
         
@@ -87,23 +87,26 @@ if (clk == 0) {
     //Already done by A.Amin
     // 6. Send the information to the scheduler at the appropriate time.
     curr=Processes.front;
-    int send_value;
+    int send_value = 1;
      printf("PG values: mode = %d , msg_key = %d, q = %d , msg_queue_id = %d\n", mode,PG_TO_SCH_KEY,q,PG_TO_SCH_MSG_QUE_ID);
     while(1)
     {
         x = getClk();
-        
         if(follow != x) //new_second
         {
         follow = x;
         //printf("Process Generator: Current Time is %d\n", x);
         if(curr != NULL && x == curr->Process_Data.Arrival_time)
         {
+            send_value = 1;
+            while(send_value != -1 &&curr != NULL && x == curr->Process_Data.Arrival_time)
+            {
             send_value = msgsnd(PG_TO_SCH_MSG_QUE_ID , curr, sizeof(curr->Process_Data), IPC_NOWAIT);
             if(send_value != -1)
             {
             printf("------PG sent process with id = %d in time %d\n" ,curr->Process_Data.Process_ID , x);
             curr = curr->Next;
+            }
             }
         }
         }
