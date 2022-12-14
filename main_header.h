@@ -13,6 +13,7 @@
 #include <unistd.h>
 #include <signal.h>
 #include <string.h>
+#define atoa(x) #x
 
 
 
@@ -75,7 +76,14 @@ typedef enum{
     STOPPED , 
     RESUMED
 }Process_States;
-
+/* Enum for Scheduling Algorithm */
+typedef enum 
+{
+    SJF = 0 ,
+    HPF = 1 ,
+    RR = 2 ,
+    MLFL = 3
+}SCHEDULING_MODE;
 /* struct for Process information */
 typedef struct{
     int Process_ID;
@@ -108,4 +116,5 @@ typedef struct{
 /* Function to Insert Process into Queue */
 struct Processes_Node* Insert_Process(Process_List *Queue, Process *N);
 struct Processes_Node *Insert_Circular_Queue(Process_List *Queue, Process *N);
+
 #endif
