@@ -8,14 +8,26 @@ int q;
 Process_List circular_Queue_RR; /*queue for RR*/
 struct Processes_Node *curr_Proc;
 int quanta;
-
+int semaphore_IDs[8]; 
 /**************************** Functions Declarations **************************/
 
 void Round_Robin(int *Process_Semaphore);
+void handler(int signum)
+{
+    printf("\nSCh: ana matt\n");
+    for (size_t i = 0; i < 8; i++)
+    {
+    semctl(semaphore_IDs[i], 0, IPC_RMID, NULL);
+    }
+    exit(0);
+}
+
+
 
 /**************************** Main Program **************************/
 int main(int argc, char *argv[])
 {
+    signal(SIGINT , handler);
     initClk();
     printf("I'm the schedular from inside my file :)\n ");
     int x = getClk();
@@ -24,7 +36,7 @@ int main(int argc, char *argv[])
     int pid = 1; /*fork return value 0:child / +ve num:Parent(schedular)*/
     mode = atoi(argv[2]);
     const int Count_OF_Processes = atoi(argv[4]); /*count of processes in system*/
-    int semaphore_IDs[Count_OF_Processes];        /*array of semaphore IDs where each process has a semaphore ID*/
+           /*array of semaphore IDs where each process has a semaphore ID*/
     key_t semaphore_Keys[Count_OF_Processes];     /*array of semaphore keys where each process has a semaphore key*/
     union Semun semun;                            /*Semaphpre union*/
 
@@ -59,11 +71,11 @@ int main(int argc, char *argv[])
             while (rec_value != -1)
             {
                 rec_value = msgrcv(PG_TO_SCH_MSG_QUE_ID, &process_to_be_recieved, sizeof(process_to_be_recieved.Process_Data), 0, IPC_NOWAIT);
-                printf("-----------Msh batlaaaaa3\n");
+                printf("\n-----------Msh batlaaaaa3\n");
 
                 if (rec_value != -1)
                 {
-                    printf("-----------Schedular_process_recieved with id: %d in time: %d\n", process_to_be_recieved.Process_Data.Process_ID, x);
+                    printf("\n-----------Schedular_process_recieved with id: %d in time: %d\n", process_to_be_recieved.Process_Data.Process_ID, x);
 
                     /*Fork only if Schedular (Parent)*/
                     if (pid != 0)
@@ -73,7 +85,7 @@ int main(int argc, char *argv[])
                         {
                             /*Create semaphore for each recieved process for Schedular (Parent only run this part)*/
                             process_to_be_recieved.Process_Data.PID = pid;
-                            semaphore_Keys[process_to_be_recieved.Process_Data.Process_ID - 1] = ftok("keyfile", process_to_be_recieved.Process_Data.Process_ID);
+                            semaphore_Keys[process_to_be_recieved.Process_Data.Process_ID - 1] = process_to_be_recieved.Process_Data.Process_ID;
                             semaphore_IDs[process_to_be_recieved.Process_Data.Process_ID - 1] = semget(semaphore_Keys[process_to_be_recieved.Process_Data.Process_ID - 1], 1, 0666 | IPC_CREAT);
                             if (semaphore_IDs[process_to_be_recieved.Process_Data.Process_ID - 1] == -1)
                             {

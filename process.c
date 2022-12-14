@@ -18,8 +18,8 @@ int main(int agrc, char *argv[])
     printf("Process %d: Current Time is %d\n", pid, x);
 
     /*Create semaphore for each recieved process*/
-    sID = ftok("keyfile", pid);
-    sem = semget(sID, 1, 0666 | IPC_CREAT);
+    
+    sem = semget(pid, 1, 0666 | IPC_CREAT);
     if (sem == -1)
     {
         perror("Error in create sem");

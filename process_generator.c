@@ -10,7 +10,7 @@ int PG_TO_SCH_KEY;
 int Count_OF_Processes=0;
 Process_List Processes;
 int PG_TO_SCH_MSG_QUE_ID;
-
+pid_t clk, sch;
 void clearResources(int);
 int main(int argc, char *argv[])
 {
@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
     // 3. Initiate and create the scheduler and clock processes.
 
     printf("\nmy pid = %d\n", getpid());
-    pid_t clk, sch;
+    
 
     clk = fork();
 
@@ -132,5 +132,6 @@ void clearResources(int signum)
     destroyClk(true);
     // TODO Clears all resources in case of interruption or finished
     msgctl(PG_TO_SCH_MSG_QUE_ID, IPC_RMID, NULL);
+    kill(SIGINT,sch);
     killpg(getpgrp(), SIGKILL);
 }
