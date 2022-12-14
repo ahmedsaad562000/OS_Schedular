@@ -1,16 +1,15 @@
 #include "main_header.h"
 //===============================
 
-
 /*****************************************************************************/
 
 /**************************** Functions Definitions **************************/
 
 /* Function to Insert Process into Queue */
-struct Processes_Node* Insert_Process(Process_List *Queue, Process *N)
+struct Processes_Node *Insert_Process(Process_List *Queue, Process *N)
 {
     // Allocate memory for new node
-     struct Processes_Node *link = (struct Processes_Node *)malloc(sizeof(struct Processes_Node));
+    struct Processes_Node *link = (struct Processes_Node *)malloc(sizeof(struct Processes_Node));
 
     // insert the data to the new node and make the next point to null
     link->Process_Data.Process_ID = N->Process_ID;
@@ -58,13 +57,14 @@ struct Processes_Node *Insert_Circular_Queue(Process_List *Queue, Process *N)
     if (Queue->front == NULL)
     {
         Queue->front = link;
-        Queue->rear = link;
-        return link;
+    }
+    else
+    {
+        Queue->rear->Next = link;
     }
     /* If not empty --> insert after Rear */
-    link->Next = Queue->front;
-    Queue->rear->Next = link;
     Queue->rear = link;
+    Queue->rear->Next = Queue->front;
 
-  return link;
+    return link;
 }
