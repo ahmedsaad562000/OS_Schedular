@@ -18,10 +18,9 @@ Process *newProcess(int Process_ID, int Arrival_time, int Running_time, int TA, 
 
 typedef struct PriorityNode
 {
-<<<<<<< HEAD
-=======
-    int data;
->>>>>>> 94f1b2d2df6d8df54af2bd8840209df95a80b652
+
+    //int data;
+
     int priority;
     Process *Process_Data;
     struct PriorityNode *next;

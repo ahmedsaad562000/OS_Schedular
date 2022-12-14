@@ -1,4 +1,5 @@
 build:
+	ipcrm -a
 	gcc process_generator.c -o process_generator.out
 	gcc clk.c -o clk.out
 	gcc scheduler.c -o sch.out
@@ -8,7 +9,7 @@ build:
 clean:
 	rm -f *.out  processes.txt
 
-all: clean build
+all: build run
 
 run:
 	

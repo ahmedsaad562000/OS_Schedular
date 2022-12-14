@@ -127,8 +127,10 @@ int main(int argc, char *argv[])
 
 void clearResources(int signum)
 {
-    killpg(getpgrp(), SIGKILL);
+    printf("\npg killed\n");
+    
     destroyClk(true);
     // TODO Clears all resources in case of interruption or finished
     msgctl(PG_TO_SCH_MSG_QUE_ID, IPC_RMID, NULL);
+    killpg(getpgrp(), SIGKILL);
 }
