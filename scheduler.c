@@ -218,6 +218,8 @@ void Round_Robin(int *Process_Semaphore)
             remove_From_Circular(&circular_Queue_RR, to_delete->Process_Data.Process_ID);
         }
     }
+    --quanta;
+    // printf("\n*_*_*_*_**_*_ Current is: %p *_*_*_*_**_*_\n",curr_Proc);
 }
 
 /*
