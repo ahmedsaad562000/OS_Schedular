@@ -6,16 +6,25 @@ int mode;
 int q;
 /*Semaphore IDs array*/
 int semaphore_IDs[8]; /*array of semaphore IDs where each process has a semaphore ID*/
+
 /*Round Robin Variables*/
 Process_List circular_Queue_RR; /*queue for RR*/
 struct Processes_Node *curr_Proc;
 int quanta;
+
+/*HPF Variables*/
+Priority_Process_List Priority_List_HPF_SJF;
 
 /**************************** Functions Declarations **************************/
 /*
 ******** Round Robin Algorithm functions *****
 */
 void Round_Robin(int *Process_Semaphore);
+
+/*
+******** HPF Algorithm functions *****
+*/
+void HPF_Algo(int *Process_Semaphore);
 
 /*
 ******** Handler to remove all semaphores *****
@@ -66,8 +75,6 @@ int main(int argc, char *argv[])
     while (1)
     {
         x = getClk();
-
-        // printf("\nX is %d and follow is: %d \n", x, follow);
 
         /*Enter loop each one second only*/
         if (follow != x)
@@ -128,6 +135,7 @@ int main(int argc, char *argv[])
                     case SJF:
                     case HPF:
                         /* code */
+                        pushIntoPriorityQueue(&Priority_List_HPF_SJF, &process_to_be_recieved.Process_Data);
                         break;
 
                     case RR:
@@ -154,35 +162,53 @@ int main(int argc, char *argv[])
             }
 
             /*switch case on modes of operation*/
-            if (!IsEmpty_Queue(&circular_Queue_RR))
+
+            switch (mode)
             {
-                switch (mode)
+            case SJF:
+                /* code */
+                break;
+
+            case HPF:
+                /* code */
+                if (!isPriorityQueueEmpty(&Priority_List_HPF_SJF))
                 {
-                case SJF:
-                    /* code */
-                    break;
-
-                case HPF:
-                    /* code */
-                    break;
-
-                case RR:
-                    /* code */
-                    Round_Robin(semaphore_IDs);
-                    break;
-
-                case MLFL:
-                    /* code */
-                    break;
-
-                default:
-                    break;
+                    HPF_Algo(semaphore_IDs);
                 }
+                else
+                {
+                    /*Increase the waiting time for schedular*/
+                }
+                break;
+
+            case RR:
+                /* code */
+                if (!IsEmpty_Queue(&circular_Queue_RR))
+                {
+                    Round_Robin(semaphore_IDs);
+                }
+                else
+                {
+                    /*Increase the waiting time for schedular*/
+                }
+
+                break;
+
+            case MLFL:
+                /* code */
+                break;
+
+            default:
+                break;
             }
 
             /*Make rec_value = 1 to re-enter the check recieved loop again*/
             rec_value = 1;
         }
+
+        /*IF Schedular finished its job it Terminates*/
+        
+
     }
     // TODO: implement the scheduler.
     // TODO: upon termination release the clock resources.
@@ -198,28 +224,122 @@ int main(int argc, char *argv[])
 */
 void Round_Robin(int *Process_Semaphore)
 {
-    /*Functions to be performed each clk*/
-    up(Process_Semaphore[curr_Proc->Process_Data.Process_ID - 1]); /*up the current semaphore*/
-    --curr_Proc->Process_Data.Remaining_time;                     /*decrease remaining time for the runing process*/
-    calc_Proc_waiting(&circular_Queue_RR,curr_Proc);             /*Function to increase waiting time for not runing processes in ready queue*/
+    printf("******************************************************************\n");
+    printf("State of  %d  is: %d and remaining is %d\n", curr_Proc->Process_Data.Process_ID, curr_Proc->Process_Data.State, curr_Proc->Process_Data.Remaining_time);
+    printf("******************************************************************\n");
 
-    /*Check if we reach the quantum to switch*/
-    if (quanta == 0 || curr_Proc->Process_Data.Remaining_time == 0)
+    /*Variable to prevent enter resumed condition if started*/
+    static int startt = 0;
+    up(Process_Semaphore[curr_Proc->Process_Data.Process_ID - 1]); /*up the current semaphore*/
+    calc_Proc_waiting(&circular_Queue_RR, curr_Proc);              /*Function to increase waiting time for not runing processes in ready queue*/
+
+    /*Check if we reach the quantum to switch or Remaining time is zero*/
+    if ((quanta == 0 || curr_Proc->Process_Data.Remaining_time == 0))
     {
         if (quanta == 0)
             quanta = q;
-        /*switch to next pr*/
+        /* ------------ switch to next pr ----------------------- */
         struct Processes_Node *to_delete;
         to_delete = curr_Proc;
-        curr_Proc = curr_Proc->Next;
+
+        /*Enter only if there is more thaan 1 process*/
+        if (circular_Queue_RR.front != circular_Queue_RR.rear)
+        {
+            curr_Proc->Process_Data.State = STOPPED;
+            startt = 0;
+
+            /*Print switch process information*/
+            if (curr_Proc->Process_Data.Remaining_time != 0)
+            {
+            }
+
+            curr_Proc = curr_Proc->Next;
+        }
+
+        /*Enter if current process finishes execution*/
         if (to_delete->Process_Data.Remaining_time == 0)
         {
-            /*remove the process from readycircular queue*/
+            /*remove the process from ready circular queue*/
+            printf("To be removed is: %d and waiting is %d\n", to_delete->Process_Data.Process_ID, to_delete->Process_Data.Waiting_time);
+
+            to_delete->Process_Data.State = FINISHED;
+            /*Print finish process information*/
+
             remove_From_Circular(&circular_Queue_RR, to_delete->Process_Data.Process_ID);
+            if (IsEmpty_Queue(&circular_Queue_RR))
+            {
+                curr_Proc = NULL;
+            }
         }
+    }
+
+    /*Enter only if the removed element is not last one in the circular queue*/
+    if (curr_Proc != NULL)
+    {
+        if (curr_Proc->Process_Data.Remaining_time == curr_Proc->Process_Data.Running_time)
+        {
+            curr_Proc->Process_Data.State = STARTED;
+            startt = 1;
+        }
+        else if (startt != 1)
+        {
+            curr_Proc->Process_Data.State = RESUMED;
+        }
+        --curr_Proc->Process_Data.Remaining_time; /*decrease remaining time for the runing process*/
     }
     --quanta;
     // printf("\n*_*_*_*_**_*_ Current is: %p *_*_*_*_**_*_\n",curr_Proc);
+}
+
+/*
+******** HPF Algorithm functions *****
+*/
+void HPF_Algo(int *Process_Semaphore)
+{
+    /*Functions to be performed each clk*/
+    printf("******************************************************************\n");
+    printf("State of  %d  is: %d and remaining is %d\n", Priority_List_HPF_SJF.head->Process_Data.Process_ID, Priority_List_HPF_SJF.head->Process_Data.State, Priority_List_HPF_SJF.head->Process_Data.Remaining_time);
+    printf("******************************************************************\n");
+
+    /*Variable to prevent enter resumed condition if started*/
+    static int startt = 0;
+    up(Process_Semaphore[Priority_List_HPF_SJF.head->Process_Data.Process_ID - 1]); /*up the current semaphore*/
+
+    /*Check if process primited and stopped*/
+    if (Priority_List_HPF_SJF.head->Next != NULL &&
+        Priority_List_HPF_SJF.head->Next->Process_Data.Remaining_time != Priority_List_HPF_SJF.head->Next->Process_Data.Running_time &&
+        Priority_List_HPF_SJF.head->Next->Process_Data.Remaining_time != 0)
+    {
+        /*Print switch process information*/
+    }
+
+    /*Check if remaining time for runing process is zero */
+    if (Priority_List_HPF_SJF.head->Process_Data.Remaining_time == 0)
+    {
+        /*switch to next process and remove the process from ready queue*/
+        Priority_List_HPF_SJF.head->Process_Data.State = FINISHED;
+        startt = 0;
+
+        /*Print finish process information*/
+
+        popFromPriorityQueue(&Priority_List_HPF_SJF);
+    }
+
+    if (Priority_List_HPF_SJF.head != NULL)
+    {
+        /*Set States of runing Process*/
+        if (Priority_List_HPF_SJF.head->Process_Data.Remaining_time == Priority_List_HPF_SJF.head->Process_Data.Running_time)
+        {
+            Priority_List_HPF_SJF.head->Process_Data.State = STARTED;
+            startt = 1;
+        }
+        else if (startt != 1)
+        {
+            Priority_List_HPF_SJF.head->Process_Data.State = RESUMED;
+        }
+        calc_Proc_waiting_Prio(&Priority_List_HPF_SJF);            /*Function to increase waiting time for not runing processes in ready queue*/
+        --Priority_List_HPF_SJF.head->Process_Data.Remaining_time; /*decrease remaining time for the runing process*/
+    }
 }
 
 /*

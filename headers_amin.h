@@ -62,9 +62,9 @@ void remove_From_Circular(Process_List *C_Queue, int id)
     // If this is the last node to be deleted
     if (C_Queue->front->Process_Data.Process_ID == id && C_Queue->front == C_Queue->rear)
     {
-        free(C_Queue->front);
         C_Queue->front = NULL;
         C_Queue->rear = NULL;
+        free(C_Queue->front);
         return;
     }
 
@@ -88,6 +88,10 @@ void remove_From_Circular(Process_List *C_Queue, int id)
         {
             // element found
             delete_node = current;
+            if(delete_node ==C_Queue->rear)
+            {
+                C_Queue->rear=prev;
+            }
             prev->Next = current->Next;
             free(delete_node);
             return;
@@ -107,19 +111,34 @@ int IsEmpty_Queue(Process_List *C_Queue)
 void calc_Proc_waiting(Process_List *C_Queue, struct Processes_Node *curr_Proc)
 {
     /*check on first node if not current proc to inc waiting time*/
-    if (C_Queue->front != curr_Proc && C_Queue->front == C_Queue->rear)
+    if (C_Queue->front == C_Queue->rear)
+    {
+        return;
+    }
+    if(C_Queue->front != curr_Proc)
     {
         ++C_Queue->front->Process_Data.Waiting_time;
-        return;
     }
     /*check on rest of queue if not current so inc waiting*/
     struct Processes_Node *current = C_Queue->front->Next;
     while (current != C_Queue->front)
     {
-        if(current != curr_Proc)
+        if (current != curr_Proc)
         {
             ++current->Process_Data.Waiting_time;
         }
+        current = current->Next;
+    }
+}
+
+/* Function to increase waiting time for not runing processes used for HPF Algorithm */
+void calc_Proc_waiting_Prio(Priority_Process_List *P_Queue)
+{
+    /*inc waiting for not runing processes*/
+    struct Processes_Node *current = P_Queue->head->Next;
+    while (current != NULL)
+    {
+        ++current->Process_Data.Waiting_time;
         current = current->Next;
     }
 }

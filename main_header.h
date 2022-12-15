@@ -101,6 +101,7 @@ typedef struct
 /* Node of Process */
 struct Processes_Node
 {
+    int priority;
     Process Process_Data;
     struct Processes_Node *Next;
 };
@@ -111,6 +112,12 @@ typedef struct
     struct Processes_Node *front;
     struct Processes_Node *rear;
 } Process_List;
+
+typedef struct
+{
+    /* Pointer to first in the Queue */
+    struct Processes_Node *head;
+} Priority_Process_List;
 
 /*****************************************************************************/
 
@@ -123,6 +130,12 @@ struct Processes_Node *Insert_Circular_Queue(Process_List *Queue, Process *N);
 /* Function to Delete from circular queue in RR Algorithm */
 void remove_From_Circular(Process_List *C_Queue, int id);
 
-
+/*Ali's functions*/
+Process *newProcess(int Process_ID, int Arrival_time, int Running_time, int TA, int W_TA, int Remaining_time, int Waiting_time, int Priority, Process_States State);
+struct Processes_Node *newPriorityQueueNode(Process *N);
+Process *peekIntoPriorityQueue(Priority_Process_List* P_Queue);
+void popFromPriorityQueue(Priority_Process_List* P_Queue);
+void pushIntoPriorityQueue(Priority_Process_List* P_Queue, Process *newProcess);
+int isPriorityQueueEmpty(Priority_Process_List* P_Queue);
 
 #endif
