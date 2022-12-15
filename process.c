@@ -18,7 +18,6 @@ int main(int agrc, char *argv[])
     printf("Process %d: Current Time is %d\n", pid, x);
 
     /*Create semaphore for each recieved process*/
-    
     sem = semget(pid, 1, 0666 | IPC_CREAT);
     if (sem == -1)
     {
@@ -37,6 +36,7 @@ int main(int agrc, char *argv[])
     while (remainingtime > 0)
     {
         x = getClk();
+        // printf("\nX is %d and follow is: %d \n", x, follow);
         /*Enter loop each one second only*/
         if (follow != x)
         {

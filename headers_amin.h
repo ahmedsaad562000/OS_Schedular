@@ -63,8 +63,9 @@ void remove_From_Circular(Process_List *C_Queue, int id)
     if (C_Queue->front->Process_Data.Process_ID == id && C_Queue->front == C_Queue->rear)
     {
         free(C_Queue->front);
-        C_Queue->front=NULL;
-        C_Queue->rear=NULL;
+        C_Queue->front = NULL;
+        C_Queue->rear = NULL;
+        return;
     }
 
     // check the first node in the linked list
@@ -92,6 +93,33 @@ void remove_From_Circular(Process_List *C_Queue, int id)
             return;
         }
         prev = current;
+        current = current->Next;
+    }
+}
+
+/* Function to Check on circular Queue is empty used for RR Algorithm */
+int IsEmpty_Queue(Process_List *C_Queue)
+{
+    return C_Queue->front == NULL;
+}
+
+/* Function to increase waiting time for not runing processes used for RR Algorithm */
+void calc_Proc_waiting(Process_List *C_Queue, struct Processes_Node *curr_Proc)
+{
+    /*check on first node if not current proc to inc waiting time*/
+    if (C_Queue->front != curr_Proc && C_Queue->front == C_Queue->rear)
+    {
+        ++C_Queue->front->Process_Data.Waiting_time;
+        return;
+    }
+    /*check on rest of queue if not current so inc waiting*/
+    struct Processes_Node *current = C_Queue->front->Next;
+    while (current != C_Queue->front)
+    {
+        if(current != curr_Proc)
+        {
+            ++current->Process_Data.Waiting_time;
+        }
         current = current->Next;
     }
 }
