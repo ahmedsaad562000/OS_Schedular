@@ -5,7 +5,7 @@
 /**************************** Functions Definitions **************************/
 
 /* Function to Read from file and insert it into linked list*/
-void Read_file(Process_List *LinkedList, char *FileName)
+void Read_file(Process_List *LinkedList, char *FileName , int mode)
 {
     Process *proc = (Process *)malloc(sizeof(Process));
     FILE *pFile;
@@ -33,7 +33,7 @@ void Read_file(Process_List *LinkedList, char *FileName)
         proc->Arrival_time = ff[1];
         proc->Running_time = ff[2];
         proc->Remaining_time = proc->Running_time;
-        proc->Priority = ff[3];
+        proc->Priority = (mode == SJF)?ff[2]:ff[3];
         proc->Waiting_time = 0;
         proc->TA = 0;
         proc->W_TA = 0;

@@ -1,3 +1,5 @@
+#ifndef SEMAPHORE_H 
+#define SEMAPHORE_H
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -49,3 +51,4 @@ void up(int sem)
         exit(-1);
     }
 }
+#endif

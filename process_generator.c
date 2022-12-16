@@ -22,12 +22,12 @@ int main(int argc, char *argv[])
         perror("Error in create msg queue");
         exit(-1);
     }
-
+    mode = atoi(argv[1]);
     signal(SIGINT, clearResources);
     signal(SIGUSR1, clearResources);
     // TODO Initialization
     // 1. Read the input files.
-    Read_file(&Processes, argv[1]);
+    Read_file(&Processes, argv[1] , mode);
     struct Processes_Node *curr = Processes.front;
     while(curr!=NULL)
     {
@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
     curr = Processes.front;
     // 2. Read the chosen scheduling algorithm and its parameters, if there are any from the argument list.
 
-    mode = atoi(argv[1]);
+    
 
     if (mode == RR || mode == MLFL)
     {
