@@ -48,7 +48,7 @@ void PRINT_CURR_PROCESS(struct Processes_Node *curr_Proc , int Time , FILE* proc
     }
     /*write to file*/ 
     strcat(line_to_print,"\n");
-    printf(line_to_print);
+    //printf(line_to_print);
     fputs(line_to_print,processess_file);//writing data into file
     
 
