@@ -13,5 +13,5 @@ all: build run
 
 run:
 
-	./process_generator.out 1
+	./process_generator.out 2 4
 

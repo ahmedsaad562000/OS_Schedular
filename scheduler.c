@@ -78,13 +78,14 @@ int main(int argc, char *argv[])
     int rec_value = 1;
     struct Processes_Node process_to_be_recieved;
 
-    /*ROUND ROBIN VARIABLES INITIALIZE*/
-    quanta = q;
-
     if (mode == RR || mode == MLFL)
     {
         q = atoi(argv[3]);
     }
+
+    /*ROUND ROBIN VARIABLES INITIALIZE*/
+    quanta = q;
+
     // MSG_QUEUE between Process generator and schedular.
     int PG_TO_SCH_MSG_QUE_ID = msgget(msg_queue_key, 0666 | IPC_CREAT);
     printf("Schedular values: mode = %d , msg_key = %d, q = %d , msg_queue_id = %d\n", mode, msg_queue_key, q, PG_TO_SCH_MSG_QUE_ID);
@@ -263,10 +264,16 @@ void Round_Robin(int *Process_Semaphore, int Time)
     /*Variable to prevent enter resumed condition if started*/
     static int startt = 0;
     up(Process_Semaphore[curr_Proc->Process_Data.Process_ID - 1]); /*up the current semaphore*/
-    calc_Proc_waiting(&circular_Queue_RR, curr_Proc);              /*Function to increase waiting time for not runing processes in ready queue*/
+
+    if (curr_Proc->Process_Data.Remaining_time == curr_Proc->Process_Data.Running_time)
+    {
+        curr_Proc->Process_Data.State = STARTED;
+        startt = 1;
+        PRINT_CURR_PROCESS(curr_Proc, Time, processess_file);
+    }
 
     /*Check if we reach the quantum to switch or Remaining time is zero*/
-    if ((quanta == 0 || curr_Proc->Process_Data.Remaining_time == 0))
+    if (quanta == 0 || curr_Proc->Process_Data.Remaining_time == 0)
     {
         if (quanta == 0)
             quanta = q;
@@ -280,25 +287,41 @@ void Round_Robin(int *Process_Semaphore, int Time)
             curr_Proc->Process_Data.State = STOPPED;
             startt = 0;
 
-            /*Print switch process information*/
-            if (curr_Proc->Process_Data.Remaining_time != 0)
+            /*Print switch old process information*/
+            if (curr_Proc->Process_Data.Remaining_time == 0)
             {
-                PRINT_CURR_PROCESS(curr_Proc, Time, processess_file);
+                to_delete->Process_Data.State = FINISHED;
             }
 
+            /*Print finish process information*/
+            PRINT_CURR_PROCESS(to_delete, Time, processess_file);
+
+            /*Switch process*/
             curr_Proc = curr_Proc->Next;
+
+            /*Print switch new process information*/
+            if (curr_Proc->Process_Data.Remaining_time == curr_Proc->Process_Data.Running_time)
+            {
+                curr_Proc->Process_Data.State = STARTED;
+                startt = 1;
+            }
+            else if (startt != 1)
+            {
+                curr_Proc->Process_Data.State = RESUMED;
+            }
+            PRINT_CURR_PROCESS(curr_Proc, Time, processess_file);
         }
 
         /*Enter if current process finishes execution*/
         if (to_delete->Process_Data.Remaining_time == 0)
         {
-            /*remove the process from ready circular queue*/
-            printf("To be removed is: %d and waiting is %d\n", to_delete->Process_Data.Process_ID, to_delete->Process_Data.Waiting_time);
-
-            to_delete->Process_Data.State = FINISHED;
-
-            /*Print finish process information*/
-            PRINT_CURR_PROCESS(to_delete, Time, processess_file);
+            if (circular_Queue_RR.front == circular_Queue_RR.rear)
+            {
+                /*Print finish process information*/
+                to_delete->Process_Data.State = FINISHED;
+                PRINT_CURR_PROCESS(to_delete, Time, processess_file);
+            }
+            /*Calculate waiting time & WTA time for schedular*/
             total_waiting_time += to_delete->Process_Data.Waiting_time;
             total_WTA_time += to_delete->Process_Data.W_TA;
 
@@ -314,18 +337,8 @@ void Round_Robin(int *Process_Semaphore, int Time)
     /*Enter only if the removed element is not last one in the circular queue*/
     if (curr_Proc != NULL)
     {
-        if (curr_Proc->Process_Data.Remaining_time == curr_Proc->Process_Data.Running_time)
-        {
-            curr_Proc->Process_Data.State = STARTED;
-
-            startt = 1;
-        }
-        else if (startt != 1)
-        {
-            curr_Proc->Process_Data.State = RESUMED;
-        }
-        PRINT_CURR_PROCESS(curr_Proc, Time, processess_file);
-        --curr_Proc->Process_Data.Remaining_time; /*decrease remaining time for the runing process*/
+        calc_Proc_waiting(&circular_Queue_RR, curr_Proc); /*Function to increase waiting time for not runing processes in ready queue*/
+        --curr_Proc->Process_Data.Remaining_time;         /*decrease remaining time for the runing process*/
     }
     --quanta;
     // printf("\n*_*_*_*_**_*_ Current is: %p *_*_*_*_**_*_\n",curr_Proc);
