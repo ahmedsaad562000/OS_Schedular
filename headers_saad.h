@@ -61,15 +61,20 @@ void COPY_then_DEQUEUE_HEAD(struct Processes_Node *curr_Proc , Priority_Process_
         curr_Proc->Process_Data.State = STARTED;
 }
 
-void Open_file_to_write(char *FileName , FILE *file)
+/*void Open_file_to_write(char *FileName , FILE *file)
 {
     file = fopen(FileName, "wt");
     fputs("HI BABY\n",file);
     
-}
+}*/
 
-void Close_file(FILE *file)
+/*void Close_file(FILE *file)
 {
     fclose(file);
-}
+}*/
 
+void finish_all()
+{
+
+
+}

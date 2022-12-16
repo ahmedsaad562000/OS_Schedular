@@ -7,7 +7,7 @@ int q;
 int finished_process_count = 0;
 int cpu_waiting_time = 0;
 int total_waiting_time = 0;
-int total_WTA_time = 0;
+float total_WTA_time = 0;
 
 const char* states[4] = {"STARTED" , "FINISHED", "STOPPED" , "RESUMED" }; 
 /*Semaphore IDs array*/
@@ -25,9 +25,8 @@ Process_List circular_Queue_RR; /*queue for RR*/
 struct Processes_Node *curr_Proc = NULL;
 int quanta;
 
-/*HPF Variables*/
+/*HPF-SJF Variables*/
 Priority_Process_List Priority_List_HPF_SJF;
-
 /**************************** Functions Declarations **************************/
 /*
 ******** Round Robin Algorithm functions *****
@@ -58,7 +57,9 @@ int main(int argc, char *argv[])
     int x = getClk();
     
     processess_file = fopen(Process_files_path, "wt");
-    fputs("HI BABY\n",processess_file);
+    fputs("#At time x process state arr w total z remain y wait k\n",processess_file);
+
+    CPU_file = fopen(CPU_file_path, "wt");
 
     /*General Variables*/
     int follow = x;
@@ -210,7 +211,7 @@ int main(int argc, char *argv[])
                 }
                 else
                 {
-                    cpu_waiting_time++;
+                    ++cpu_waiting_time;
                     /*Increase the waiting time for schedular*/
                 }
                 break;
@@ -223,7 +224,7 @@ int main(int argc, char *argv[])
                 }
                 else
                 {
-                    cpu_waiting_time++;
+                    ++cpu_waiting_time;
                     /*Increase the waiting time for schedular*/
                 }
 
@@ -343,7 +344,7 @@ void Round_Robin(int *Process_Semaphore , int Time)
 */
 void HPF_Algo(int *Process_Semaphore , int Time)
 {
-     /*Functions to be performed each clk*/
+    /*Functions to be performed each clk*/
     printf("******************************************************************\n");
     printf("State of  %d  is: %d and remaining is %d\n", Priority_List_HPF_SJF.head->Process_Data.Process_ID, Priority_List_HPF_SJF.head->Process_Data.State, Priority_List_HPF_SJF.head->Process_Data.Remaining_time);
     printf("******************************************************************\n");
@@ -371,7 +372,8 @@ void HPF_Algo(int *Process_Semaphore , int Time)
         /*Print finish process information*/
         PRINT_CURR_PROCESS(Priority_List_HPF_SJF.head , Time , processess_file);
         total_waiting_time+=Priority_List_HPF_SJF.head->Process_Data.Waiting_time;
-        total_WTA_time+=Priority_List_HPF_SJF.head->Process_Data.Waiting_time;
+        total_WTA_time+=Priority_List_HPF_SJF.head->Process_Data.W_TA;
+
         popFromPriorityQueue(&Priority_List_HPF_SJF);
         // make pointer points to new head
         curr_Proc = Priority_List_HPF_SJF.head;
@@ -397,6 +399,7 @@ void HPF_Algo(int *Process_Semaphore , int Time)
 
 void SJF_Algo(int *Process_Semaphore , int Time)
 {
+    static int check = 0;
     static bool started = false;
     /*Functions to be performed each clk*/
     //printf("******************************************************************\n");
@@ -423,7 +426,14 @@ void SJF_Algo(int *Process_Semaphore , int Time)
     }
     else //There is a process running
     {
-        finished_process_count +=RUN_CURR_PROCESS(curr_Proc , Process_Semaphore , &Priority_List_HPF_SJF ,Time, processess_file);
+        //finished_process_count +=RUN_CURR_PROCESS(curr_Proc , Process_Semaphore , &Priority_List_HPF_SJF ,Time, processess_file);
+        check =RUN_CURR_PROCESS(curr_Proc , Process_Semaphore , &Priority_List_HPF_SJF ,Time , processess_file);
+        finished_process_count += check;
+        if(check == 1)
+        {
+        total_waiting_time+=curr_Proc->Process_Data.Waiting_time;
+        total_WTA_time+=curr_Proc->Process_Data.W_TA;
+        }
         if(finished_process_count == 8){fclose(processess_file);}
     } 
     }
@@ -442,7 +452,14 @@ void SJF_Algo(int *Process_Semaphore , int Time)
         PRINT_CURR_PROCESS(curr_Proc,Time, processess_file);
 
         /*run_process*/
-        finished_process_count +=RUN_CURR_PROCESS(curr_Proc , Process_Semaphore , &Priority_List_HPF_SJF ,Time , processess_file);
+        check =RUN_CURR_PROCESS(curr_Proc , Process_Semaphore , &Priority_List_HPF_SJF ,Time , processess_file);
+        finished_process_count += check;
+        if(check == 1)
+        {
+        total_waiting_time+=curr_Proc->Process_Data.Waiting_time;
+        total_WTA_time+=curr_Proc->Process_Data.W_TA;
+        }
+        
         //if(finished_process_count == Process_COUNT){/*finish*/}
 
         }
@@ -451,12 +468,27 @@ void SJF_Algo(int *Process_Semaphore , int Time)
         COPY_then_DEQUEUE_HEAD(curr_Proc , &Priority_List_HPF_SJF);
         /*print_process_start*/
         PRINT_CURR_PROCESS(curr_Proc,Time, processess_file);
-        finished_process_count +=RUN_CURR_PROCESS(curr_Proc , Process_Semaphore , &Priority_List_HPF_SJF ,Time, processess_file);
+
+
+        check =RUN_CURR_PROCESS(curr_Proc , Process_Semaphore , &Priority_List_HPF_SJF ,Time , processess_file);
+        finished_process_count += check;
+        if(check == 1) //process_is_finished
+        {
+        total_waiting_time+=curr_Proc->Process_Data.Waiting_time;
+        total_WTA_time+=curr_Proc->Process_Data.W_TA;
+        }
+
         //if(finished_process_count == Process_COUNT){/*finish*/}
         }
         else //There is a process running
         {
-        finished_process_count +=RUN_CURR_PROCESS(curr_Proc , Process_Semaphore , &Priority_List_HPF_SJF , Time, processess_file);
+        check =RUN_CURR_PROCESS(curr_Proc , Process_Semaphore , &Priority_List_HPF_SJF ,Time , processess_file);
+        finished_process_count += check;
+        if(check == 1)
+        {
+        total_waiting_time+=curr_Proc->Process_Data.Waiting_time;
+        total_WTA_time+=curr_Proc->Process_Data.W_TA;
+        }
         //if(finished_process_count == Process_COUNT){/*finish*/}
         }  
     }
@@ -477,8 +509,8 @@ void SJF_Algo(int *Process_Semaphore , int Time)
 */
 void handler(int signum)
 {
-    if(finished_process_count != 8){fclose(processess_file);}
-    printf("\nSCh: ana matt\n");
+    //if(finished_process_count != 8){fclose(processess_file);}
+    printf("\nSCh: ana matt with CPU_WT = %d , TOTAL_WTA = %.2f, TOTAL_Processess_WT = %d \n",cpu_waiting_time,total_WTA_time,total_waiting_time);
     for (size_t i = 0; i < 8; i++)
     {
         semctl(semaphore_IDs[i], 0, IPC_RMID, NULL);
