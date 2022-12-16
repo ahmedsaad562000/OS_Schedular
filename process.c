@@ -34,6 +34,8 @@ int main(int agrc, char *argv[])
 
     // TODO The process needs to get the remaining time from somewhere
     // remainingtime = ??;
+
+    // semaphore 
     while (remainingtime > 0)
     {
         x = getClk();

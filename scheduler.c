@@ -135,6 +135,13 @@ int main(int argc, char *argv[])
                     case SJF:
                     case HPF:
                         /* code */
+                        if (isPriorityQueueEmpty(&Priority_List_HPF_SJF))
+                        {
+                            printf("\n from If condition \n");
+                            pushIntoPriorityQueue(&Priority_List_HPF_SJF, &process_to_be_recieved.Process_Data);
+                            curr_Proc = Priority_List_HPF_SJF.head;
+                            break;
+                        }
                         pushIntoPriorityQueue(&Priority_List_HPF_SJF, &process_to_be_recieved.Process_Data);
                         break;
 
@@ -207,8 +214,6 @@ int main(int argc, char *argv[])
         }
 
         /*IF Schedular finished its job it Terminates*/
-        
-
     }
     // TODO: implement the scheduler.
     // TODO: upon termination release the clock resources.
@@ -306,11 +311,11 @@ void HPF_Algo(int *Process_Semaphore)
     up(Process_Semaphore[Priority_List_HPF_SJF.head->Process_Data.Process_ID - 1]); /*up the current semaphore*/
 
     /*Check if process primited and stopped*/
-    if (Priority_List_HPF_SJF.head->Next != NULL &&
-        Priority_List_HPF_SJF.head->Next->Process_Data.Remaining_time != Priority_List_HPF_SJF.head->Next->Process_Data.Running_time &&
-        Priority_List_HPF_SJF.head->Next->Process_Data.Remaining_time != 0)
+    if (curr_Proc->Process_Data.Process_ID != Priority_List_HPF_SJF.head->Process_Data.Process_ID)
     {
-        /*Print switch process information*/
+        // print information for Preemtid Process
+
+        curr_Proc = Priority_List_HPF_SJF.head;
     }
 
     /*Check if remaining time for runing process is zero */
@@ -323,6 +328,8 @@ void HPF_Algo(int *Process_Semaphore)
         /*Print finish process information*/
 
         popFromPriorityQueue(&Priority_List_HPF_SJF);
+        // make pointer points to new head
+        curr_Proc = Priority_List_HPF_SJF.head;
     }
 
     if (Priority_List_HPF_SJF.head != NULL)
