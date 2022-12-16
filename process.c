@@ -41,6 +41,7 @@ int main(int agrc, char *argv[])
         if (follow != x)
         {
             follow = x;
+           if(remainingtime == 1){printf("<<<<<<<<<<<<<<<<<<<< Process %d BEFORE SEM >>>>>>>>>>>>>>>>>\n",pid);};
             down(sem);
             --remainingtime;
             printf("------------------------------------------------------------\n");
