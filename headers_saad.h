@@ -73,4 +73,3 @@ void Close_file(FILE *file)
     fclose(file);
 }
 
-void get_AVG_WTA_TIME();
