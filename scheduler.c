@@ -464,14 +464,9 @@ void HPF_Algo(int *Process_Semaphore, int Time)
 void SJF_Algo(int *Process_Semaphore, int Time)
 {
     static int process_count = 0;
+    static bool last_up = true;
     finished_process_count = process_count;
     static int check = 0;
-    static bool started = false;
-    /*Functions to be performed each clk*/
-    // printf("******************************************************************\n");
-    //  printf("State of  %d  is: %d and remaining is %d\n", Priority_List_HPF_SJF.head->Process_Data.Process_ID, Priority_List_HPF_SJF.head->Process_Data.State, Priority_List_HPF_SJF.head->Process_Data.Remaining_time);
-    // printf("******************************************************************\n");
-    ///////////////////////////////////////////////////////////////////
 
     // there is no process to run in the queue;
 
@@ -479,12 +474,19 @@ void SJF_Algo(int *Process_Semaphore, int Time)
     {
         // there is no process to run in the queue;
         if (curr_Proc == NULL) // no_currently_running_process
-        {
+        { 
             /*add_waiting_time*/
             cpu_waiting_time++;
         }
         else if (curr_Proc->Process_Data.State == FINISHED) // Current_Process_is_finished_and_no_process_to_run
         {
+            /* make last up*/
+            if(last_up)
+            {
+                last_up = false;
+                up(Process_Semaphore[curr_Proc->Process_Data.Process_ID - 1]);
+
+            }
             /*add_waiting_time*/
             cpu_waiting_time++;
         }
@@ -526,6 +528,9 @@ void SJF_Algo(int *Process_Semaphore, int Time)
         }
         else if (curr_Proc->Process_Data.State == FINISHED) // Current_Process_is_finished_so_switch_to_another
         {
+            last_up = true; //make last up
+            up(Process_Semaphore[curr_Proc->Process_Data.Process_ID - 1]);
+        
             COPY_then_DEQUEUE_HEAD(curr_Proc, &Priority_List_HPF_SJF);
             /*print_process_start*/
             PRINT_CURR_PROCESS(curr_Proc, Time, processess_file);

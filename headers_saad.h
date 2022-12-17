@@ -22,7 +22,7 @@ int RUN_CURR_PROCESS(struct Processes_Node *curr_Proc, int *Process_Semaphore, P
     /*check if this clock was process last_clock*/
     if (curr_Proc->Process_Data.Remaining_time == 0)
     {
-        up(Process_Semaphore[curr_Proc->Process_Data.Process_ID - 1]);
+        
         curr_Proc->Process_Data.State = FINISHED;
         /*Print finish process information*/
         PRINT_CURR_PROCESS(curr_Proc, Time + 1, processess_file);
