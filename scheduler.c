@@ -440,6 +440,8 @@ void HPF_Algo(int *Process_Semaphore, int Time)
         calc_Proc_waiting_Prio(&Priority_List_HPF_SJF);            /*Function to increase waiting time for not runing processes in ready queue*/
         --Priority_List_HPF_SJF.head->Process_Data.Remaining_time; /*decrease remaining time for the runing process*/
     }
+    if (isPriorityQueueEmpty(&Priority_List_HPF_SJF))
+        cpu_waiting_time++;
 }
 
 void SJF_Algo(int *Process_Semaphore, int Time)
