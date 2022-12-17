@@ -8,13 +8,12 @@ build:
 
 clean:
 	rm -f *.out  processes.txt
+	./test_generator.out 
 
 all: build run
 
-test: 
-	./test_generator.out 
 
 run:
 
-	./process_generator.out processes.txt -sch 1 -q 2
+	./process_generator.out processes.txt -sch 0 -q 2
 
