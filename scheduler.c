@@ -247,7 +247,7 @@ int main(int argc, char *argv[])
             //if(mode== SJF){follow++;cpu_waiting_time++;}
             char line_to_print[256];
             
-            sprintf(line_to_print, "\nCPU utilization = %.2f %%\nAvg WTA = %.2f\nAvg Waiting = %.2f \n", ((float)(follow - cpu_waiting_time) * 100) / (float)follow, total_WTA_time / Count_OF_Processes, (float)total_waiting_time / (float)Count_OF_Processes);
+            sprintf(line_to_print, "CPU utilization = %.2f %%\nAvg WTA = %.2f\nAvg Waiting = %.2f \n", ((float)(follow - cpu_waiting_time) * 100) / (float)follow, total_WTA_time / Count_OF_Processes, (float)total_waiting_time / (float)Count_OF_Processes);
             fputs(line_to_print, CPU_file);
             printf("cpu_wainting_time= %d , curr_time = %d",cpu_waiting_time , follow);
             fclose(CPU_file);
@@ -545,7 +545,7 @@ void handler(int signum)
      if(finished_process_count != Count_OF_Processes)
      {
             char line_to_print[256];
-            sprintf(line_to_print, "\nCPU utilization = %.2f %%\nAvg WTA = %.2f\nAvg Waiting = %.2f \n", ((float)cpu_waiting_time * 100) / (float)follow, total_WTA_time / Count_OF_Processes, (float)total_waiting_time / (float)Count_OF_Processes);
+            sprintf(line_to_print, "CPU utilization = %.2f %%\nAvg WTA = %.2f\nAvg Waiting = %.2f \n", ((float)cpu_waiting_time * 100) / (float)follow, total_WTA_time / Count_OF_Processes, (float)total_waiting_time / (float)Count_OF_Processes);
             fputs(line_to_print, CPU_file);
             fclose(CPU_file);
             fclose(processess_file);
