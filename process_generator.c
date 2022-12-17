@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
     signal(SIGUSR1, clearResources);
     // TODO Initialization
     // 1. Read the input files.
-    Read_file(&Processes, argv[1] , mode);
+    Read_file(&Processes, argv[2] , mode);
     struct Processes_Node *curr = Processes.front;
     while(curr!=NULL)
     {
@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
 
     if (mode == RR || mode == MLFL)
     {
-        q = atoi(argv[2]);
+        q = atoi(argv[4]);
     }
     // 3. Initiate and create the scheduler and clock processes.
 
