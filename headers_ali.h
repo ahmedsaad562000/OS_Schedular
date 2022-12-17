@@ -63,7 +63,7 @@ void pushIntoPriorityQueue(Priority_Process_List *P_Queue, Process *newProcess)
     temp->Process_Data.TA = newProcess->TA;
     temp->Process_Data.W_TA = newProcess->W_TA;
     temp->Process_Data.Waiting_time = newProcess->Waiting_time;
-
+    temp->Process_Data.Priority = newProcess->Priority;
     /*if list is already empty*/
     if (P_Queue->head == NULL)
     {
@@ -76,7 +76,7 @@ void pushIntoPriorityQueue(Priority_Process_List *P_Queue, Process *newProcess)
     struct Processes_Node *prev_start = P_Queue->head;
     if (P_Queue->head->priority > newProcess->Priority)
     {
-        P_Queue->head->Process_Data.State = STOPPED; 
+        P_Queue->head->Process_Data.State = STOPPED;
         temp->Next = P_Queue->head;
         P_Queue->head = temp;
     }
@@ -96,4 +96,77 @@ void pushIntoPriorityQueue(Priority_Process_List *P_Queue, Process *newProcess)
 int isPriorityQueueEmpty(Priority_Process_List *P_Queue)
 {
     return P_Queue->head == NULL;
+}
+
+void pushIntoMultiLevel(MultiLevel *m, Process *newProcess)
+{
+    int priority = newProcess->Priority;
+    Priority_Process_List *priorityList = &m->listOfQueues[priority];
+    pushIntoPriorityQueue(priorityList, newProcess);
+}
+void pushIntoNextLevel(int currLevel, Process *processToBePushedIntoNextLevel, MultiLevel *m)
+{
+    int priority = currLevel + 1;
+    if (priority == 10)
+    {
+        pushIntoPriorityQueue(&m->toBeReturnedToItsLevel, processToBePushedIntoNextLevel);
+    }
+    else
+    {
+        Priority_Process_List *priorityList = &m->listOfQueues[priority];
+        pushIntoPriorityQueue(priorityList, processToBePushedIntoNextLevel);
+    }
+    popFromPriorityQueue(&m->listOfQueues[priority - 1]);
+}
+int AreAllLevelsEmpty(MultiLevel *m)
+{
+    for (int i = 0; i < 10; i++)
+    {
+        if (m->listOfQueues[i].head != NULL)
+        {
+            return 0;
+        }
+    }
+    return 1;
+}
+int isMultiLevelEmpty(MultiLevel *m)
+{
+    if (m->toBeReturnedToItsLevel.head == NULL && AreAllLevelsEmpty(m))
+        return 1;
+    else
+        return 0;
+}
+int pushAllProcessBackToItsLevel(MultiLevel *m)
+{
+    while (!isPriorityQueueEmpty(&m->toBeReturnedToItsLevel))
+    {
+        Process *processData = peekIntoPriorityQueue(&m->toBeReturnedToItsLevel);
+        pushIntoMultiLevel(m, processData);
+        popFromPriorityQueue(&m->toBeReturnedToItsLevel);
+    }
+}
+Process *getNextProcessFromMultiLevel(MultiLevel *m, int *currentLevel)
+{
+    for (int i = 0; i < 10; i++)
+    {
+        if (!isPriorityQueueEmpty(&m->listOfQueues[i]))
+        {
+            *currentLevel = i;
+            return peekIntoPriorityQueue(&m->listOfQueues[i]);
+        }
+    }
+    return NULL;
+}
+void moveProcessToFinished(int currLevel, Process *processFinished, MultiLevel *m)
+{
+    pushIntoPriorityQueue(&m->FinishedProcesses, processFinished);
+    popFromPriorityQueue(&m->listOfQueues[currLevel]);
+}
+void AddWaitingMultiLevel(MultiLevel *m)
+{
+    for (int i = 0; i < 10; i++)
+    {
+        Add_waiting_SJF(&m->listOfQueues[i]);
+    }
+    Add_waiting_SJF(&m->toBeReturnedToItsLevel);
 }

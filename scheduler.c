@@ -28,6 +28,11 @@ int quanta;
 
 /*HPF-SJF Variables*/
 Priority_Process_List Priority_List_HPF_SJF;
+
+/*Multi-Level Variables*/
+int currentLevel = 0;
+int quantamsLeft = 0;
+MultiLevel m;
 /**************************** Functions Declarations **************************/
 /*
 ******** Round Robin Algorithm functions *****
@@ -43,6 +48,11 @@ void HPF_Algo(int *Process_Semaphore, int Time);
 ******** SJF Algorithm functions *****
 */
 void SJF_Algo(int *Process_Semaphore, int Time);
+
+/*
+******** MultiLevel Algorithm functions *****
+*/
+void MLF_Algo(int *Process_Semaphore, int Time);
 
 /*
 ******** Handler to remove all semaphores *****
@@ -69,10 +79,10 @@ int main(int argc, char *argv[])
     mode = atoi(argv[2]);
 
     /*Semaphore Variables*/
-    Count_OF_Processes = atoi(argv[4]); /*count of processes in system*/
-    key_t semaphore_Keys[Count_OF_Processes];     /*array of semaphore keys where each process has a semaphore key*/
-    union Semun semun;                            /*Semaphpre union*/
-    semaphore_IDs = (int*)malloc(Count_OF_Processes*sizeof(int));
+    Count_OF_Processes = atoi(argv[4]);       /*count of processes in system*/
+    key_t semaphore_Keys[Count_OF_Processes]; /*array of semaphore keys where each process has a semaphore key*/
+    union Semun semun;                        /*Semaphpre union*/
+    semaphore_IDs = (int *)malloc(Count_OF_Processes * sizeof(int));
     // for (int i = 0; i < 8; i++)  intialize semaphore ids by -1 at first
     // {
     //     semaphore_IDs[i] = -1;
@@ -83,6 +93,13 @@ int main(int argc, char *argv[])
 
     /*ROUND ROBIN VARIABLES INITIALIZE*/
     quanta = q;
+    /*MultiLevel VARIABLES INITIALIZE*/
+    for (int i = 0; i < 10; i++)
+    {
+        m.listOfQueues[i].head = NULL;
+    }
+    m.FinishedProcesses.head = NULL;
+    m.toBeReturnedToItsLevel.head = NULL;
 
     if (mode == RR || mode == MLFL)
     {
@@ -184,6 +201,7 @@ int main(int argc, char *argv[])
 
                     case MLFL:
                         /* code */
+                        pushIntoMultiLevel(&m, &process_to_be_recieved.Process_Data);
                         break;
 
                     default:
@@ -233,6 +251,7 @@ int main(int argc, char *argv[])
 
             case MLFL:
                 /* code */
+                MLF_Algo(semaphore_IDs, follow);
                 break;
 
             default:
@@ -241,23 +260,21 @@ int main(int argc, char *argv[])
 
             /*Make rec_value = 1 to re-enter the check recieved loop again*/
             rec_value = 1;
-        /*IF Schedular finished its job it Terminates*/
-        if (finished_process_count == Count_OF_Processes)
-        {
-            //if(mode== SJF){follow++;cpu_waiting_time++;}
-            char line_to_print[256];
-            
-            sprintf(line_to_print, "CPU utilization = %.2f %%\nAvg WTA = %.2f\nAvg Waiting = %.2f \n", ((float)(follow - cpu_waiting_time) * 100) / (float)follow, total_WTA_time / Count_OF_Processes, (float)total_waiting_time / (float)Count_OF_Processes);
-            fputs(line_to_print, CPU_file);
-            printf("cpu_wainting_time= %d , curr_time = %d",cpu_waiting_time , follow);
-            fclose(CPU_file);
-            fclose(processess_file);
+            /*IF Schedular finished its job it Terminates*/
+            if (finished_process_count == Count_OF_Processes)
+            {
+                // if(mode== SJF){follow++;cpu_waiting_time++;}
+                char line_to_print[256];
 
-            kill(getppid(),SIGINT);
+                sprintf(line_to_print, "CPU utilization = %.2f %%\nAvg WTA = %.2f\nAvg Waiting = %.2f \n", ((float)(follow - cpu_waiting_time) * 100) / (float)follow, total_WTA_time / Count_OF_Processes, (float)total_waiting_time / (float)Count_OF_Processes);
+                fputs(line_to_print, CPU_file);
+                printf("cpu_wainting_time= %d , curr_time = %d", cpu_waiting_time, follow);
+                fclose(CPU_file);
+                fclose(processess_file);
+
+                kill(getppid(), SIGINT);
+            }
         }
-        }
-
-
     }
     // TODO: implement the scheduler.
     // TODO: upon termination release the clock resources.
@@ -537,20 +554,32 @@ void SJF_Algo(int *Process_Semaphore, int Time)
     }
 }
 
+void MLF_Algo(int *Process_Semaphore, int Time)
+{
+    if (isMultiLevelEmpty(&m))
+    {
+        // there is no process to run in the queue;
+        if (curr_Proc == NULL) // no_currently_running_process
+        {
+            /*add_waiting_time*/
+            cpu_waiting_time++;
+        }
+    }
+}
 /*
 ******** Handler to remove all semaphores *****
 */
 void handler(int signum)
 {
-     if(finished_process_count != Count_OF_Processes)
-     {
-            char line_to_print[256];
-            sprintf(line_to_print, "CPU utilization = %.2f %%\nAvg WTA = %.2f\nAvg Waiting = %.2f \n", ((float)cpu_waiting_time * 100) / (float)follow, total_WTA_time / Count_OF_Processes, (float)total_waiting_time / (float)Count_OF_Processes);
-            fputs(line_to_print, CPU_file);
-            fclose(CPU_file);
-            fclose(processess_file);
+    if (finished_process_count != Count_OF_Processes)
+    {
+        char line_to_print[256];
+        sprintf(line_to_print, "CPU utilization = %.2f %%\nAvg WTA = %.2f\nAvg Waiting = %.2f \n", ((float)cpu_waiting_time * 100) / (float)follow, total_WTA_time / Count_OF_Processes, (float)total_waiting_time / (float)Count_OF_Processes);
+        fputs(line_to_print, CPU_file);
+        fclose(CPU_file);
+        fclose(processess_file);
     }
-    //printf("\nSCh: ana matt with CPU_WT = %d , TOTAL_WTA = %.2f, TOTAL_Processess_WT = %d \n", cpu_waiting_time, total_WTA_time, total_waiting_time);
+    // printf("\nSCh: ana matt with CPU_WT = %d , TOTAL_WTA = %.2f, TOTAL_Processess_WT = %d \n", cpu_waiting_time, total_WTA_time, total_waiting_time);
     for (size_t i = 0; i < 8; i++)
     {
         semctl(semaphore_IDs[i], 0, IPC_RMID, NULL);

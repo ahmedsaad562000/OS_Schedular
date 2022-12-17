@@ -120,6 +120,12 @@ typedef struct
     struct Processes_Node *head;
 } Priority_Process_List;
 
+typedef struct
+{
+    Priority_Process_List listOfQueues[10];
+    Priority_Process_List toBeReturnedToItsLevel;
+    Priority_Process_List FinishedProcesses;
+} MultiLevel;
 /*****************************************************************************/
 
 /**************************** Functions Declarations **************************/
@@ -137,14 +143,21 @@ Process *peekIntoPriorityQueue(Priority_Process_List *P_Queue);
 void popFromPriorityQueue(Priority_Process_List *P_Queue);
 void pushIntoPriorityQueue(Priority_Process_List *P_Queue, Process *newProcess);
 int isPriorityQueueEmpty(Priority_Process_List *P_Queue);
-
+void pushIntoMultiLevel(MultiLevel *m, Process *newProcess);
+void pushIntoNextLevel(int currLevel, Process *processToBePushedIntoNextLevel, MultiLevel *m);
+int AreAllLevelsEmpty(MultiLevel *m);
+int isMultiLevelEmpty(MultiLevel *m);
+int pushAllProcessBackToItsLevel(MultiLevel *m);
+Process *getNextProcessFromMultiLevel(MultiLevel *m, int *currentLevel);
+void moveProcessToFinished(int currLevel, Process *processFinished, MultiLevel *m);
+void AddWaitingMultiLevel(MultiLevel *m);
 /*SJF*/
 void Add_waiting_SJF(Priority_Process_List *P_Queue);
-int RUN_CURR_PROCESS(struct Processes_Node *curr_Proc , int* Process_Semaphore, Priority_Process_List *P_Queue , int Time , FILE* processess_file);
-void COPY_then_DEQUEUE_HEAD(struct Processes_Node *curr_Proc , Priority_Process_List *P_Queue);
+int RUN_CURR_PROCESS(struct Processes_Node *curr_Proc, int *Process_Semaphore, Priority_Process_List *P_Queue, int Time, FILE *processess_file);
+void COPY_then_DEQUEUE_HEAD(struct Processes_Node *curr_Proc, Priority_Process_List *P_Queue);
 /*Print*/
-void PRINT_CURR_PROCESS(struct Processes_Node *curr_Proc , int Time, FILE* processess_file);
+void PRINT_CURR_PROCESS(struct Processes_Node *curr_Proc, int Time, FILE *processess_file);
 void Close_file(FILE *file);
-void Open_file_to_write(char *FileName , FILE *file);
+void Open_file_to_write(char *FileName, FILE *file);
 
 #endif
