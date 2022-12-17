@@ -11,7 +11,6 @@ float total_WTA_time = 0;
 int Count_OF_Processes;
 int follow;
 
-
 const char *states[4] = {"STARTED", "FINISHED", "STOPPED", "RESUMED"};
 /*Semaphore IDs array*/
 int *semaphore_IDs; /*array of semaphore IDs where each process has a semaphore ID*/
@@ -34,6 +33,7 @@ Priority_Process_List Priority_List_HPF_SJF;
 int currentLevel = 0;
 int quantamsLeft = 0;
 MultiLevel m;
+Process *currentProcess;
 /**************************** Functions Declarations **************************/
 /*
 ******** Round Robin Algorithm functions *****
@@ -121,7 +121,7 @@ int main(int argc, char *argv[])
         if (follow != x)
         {
             follow = x;
-            printf("Schedular: Current Time is %d\n real_count_of_process = %d , current count = %d\n", x , Count_OF_Processes , finished_process_count );
+            printf("Schedular: Current Time is %d\n real_count_of_process = %d , current count = %d\n", x, Count_OF_Processes, finished_process_count);
 
             /*Enter when recieve new processes from generator*/
             while (rec_value != -1)
@@ -478,18 +478,17 @@ void SJF_Algo(int *Process_Semaphore, int Time)
     {
         // there is no process to run in the queue;
         if (curr_Proc == NULL) // no_currently_running_process
-        { 
+        {
             /*add_waiting_time*/
             cpu_waiting_time++;
         }
         else if (curr_Proc->Process_Data.State == FINISHED) // Current_Process_is_finished_and_no_process_to_run
         {
             /* make last up*/
-            if(last_up)
+            if (last_up)
             {
                 last_up = false;
                 up(Process_Semaphore[curr_Proc->Process_Data.Process_ID - 1]);
-
             }
             /*add_waiting_time*/
             cpu_waiting_time++;
@@ -532,9 +531,9 @@ void SJF_Algo(int *Process_Semaphore, int Time)
         }
         else if (curr_Proc->Process_Data.State == FINISHED) // Current_Process_is_finished_so_switch_to_another
         {
-            last_up = true; //make last up
+            last_up = true; // make last up
             up(Process_Semaphore[curr_Proc->Process_Data.Process_ID - 1]);
-        
+
             COPY_then_DEQUEUE_HEAD(curr_Proc, &Priority_List_HPF_SJF);
             /*print_process_start*/
             PRINT_CURR_PROCESS(curr_Proc, Time, processess_file);
@@ -565,14 +564,47 @@ void SJF_Algo(int *Process_Semaphore, int Time)
 
 void MLF_Algo(int *Process_Semaphore, int Time)
 {
+    if (currentProcess == NULL && AreAllLevelsEmpty(&m) && !isMultiLevelEmpty(&m))
+    {
+        pushAllProcessBackToItsLevel(&m);
+    }
+
     if (isMultiLevelEmpty(&m))
     {
         // there is no process to run in the queue;
-        if (curr_Proc == NULL) // no_currently_running_process
-        {
-            /*add_waiting_time*/
+        if (currentProcess == NULL) // no_currently_running_process
             cpu_waiting_time++;
+        else
+        {
+            runMultiLevelProcess(currentProcess, Process_Semaphore, &m, Time, processess_file);
+            quantamsLeft--;
         }
+    }
+    else
+    {
+        if (quantamsLeft != 0)
+        {
+            if (currentProcess == NULL)
+            {
+                currentProcess = getNextProcessFromMultiLevel(&m, &currentLevel);
+                // set state
+                setProcessState(currentProcess);
+                // print
+                printProcess(currentProcess, Time, processess_file);
+            }
+        }
+        else
+        {
+            quantamsLeft = q;
+            pushIntoNextLevel(currentLevel, currentProcess, &m);
+            currentProcess = getNextProcessFromMultiLevel(&m, &currentLevel);
+            // set state
+            setProcessState(currentProcess);
+            // print
+            printProcess(currentProcess, Time, processess_file);
+        }
+        runMultiLevelProcess(currentProcess, Process_Semaphore, &m, Time, processess_file);
+        quantamsLeft--;
     }
 }
 /*

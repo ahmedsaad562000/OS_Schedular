@@ -170,3 +170,33 @@ void AddWaitingMultiLevel(MultiLevel *m)
     }
     Add_waiting_SJF(&m->toBeReturnedToItsLevel);
 }
+void printProcess(Process *processToPrint, int Time, FILE *processess_file)
+{
+    struct Processes_Node *temp;
+    temp->Process_Data = *processToPrint;
+    PRINT_CURR_PROCESS(temp, Time + 1, processess_file);
+}
+void runMultiLevelProcess(Process *curr_Proc, int *Process_Semaphore, MultiLevel *m, int Time, FILE *processess_file)
+{
+
+    /*run_curr_process_logic*/
+    up(Process_Semaphore[curr_Proc->Process_ID - 1]);
+    AddWaitingMultiLevel(m);     /*Function to increase waiting time for not runing processes in ready queue*/
+    --curr_Proc->Remaining_time; /*decrease remaining time for the runing process*
+    ////////////////////////////
+    /*check if this clock was process last_clock*/
+    if (curr_Proc->Remaining_time == 0)
+    {
+        curr_Proc->State = FINISHED;
+        /*Print finish process information*/
+        printProcess(curr_Proc, Time + 1, processess_file);
+    }
+}
+
+void setProcessState(Process *p)
+{
+    if (p->Remaining_time == p->Running_time)
+        p->State = STARTED;
+    else
+        p->State = RESUMED;
+}
