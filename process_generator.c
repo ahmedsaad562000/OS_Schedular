@@ -22,12 +22,12 @@ int main(int argc, char *argv[])
         perror("Error in create msg queue");
         exit(-1);
     }
-
+    mode = atoi(argv[2]);
     signal(SIGINT, clearResources);
     signal(SIGUSR1, clearResources);
     // TODO Initialization
     // 1. Read the input files.
-    Read_file(&Processes, argv[1]);
+    Read_file(&Processes, argv[1] , mode);
     struct Processes_Node *curr = Processes.front;
     while(curr!=NULL)
     {
@@ -38,11 +38,11 @@ int main(int argc, char *argv[])
     curr = Processes.front;
     // 2. Read the chosen scheduling algorithm and its parameters, if there are any from the argument list.
 
-    mode = atoi(argv[1]);
+    
 
     if (mode == RR || mode == MLFL)
     {
-        q = atoi(argv[2]);
+        q = atoi(argv[4]);
     }
     // 3. Initiate and create the scheduler and clock processes.
 
@@ -132,6 +132,8 @@ void clearResources(int signum)
     destroyClk(true);
     // TODO Clears all resources in case of interruption or finished
     msgctl(PG_TO_SCH_MSG_QUE_ID, IPC_RMID, NULL);
+    kill(SIGKILL,clk);
     kill(SIGINT,sch);
-    killpg(getpgrp(), SIGKILL);
+    exit(0);
+    //killpg(getpgrp(), SIGKILL);
 }

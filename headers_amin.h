@@ -5,11 +5,11 @@
 /**************************** Functions Definitions **************************/
 
 /* Function to Read from file and insert it into linked list*/
-void Read_file(Process_List *LinkedList, char *FileName)
+void Read_file(Process_List *LinkedList, char *FileName , int mode)
 {
     Process *proc = (Process *)malloc(sizeof(Process));
     FILE *pFile;
-    pFile = fopen("processes.txt", "r");
+    pFile = fopen(FileName, "r");
     char line[256];
     int ff[4];
     while (fgets(line, sizeof(line), pFile))
@@ -33,7 +33,7 @@ void Read_file(Process_List *LinkedList, char *FileName)
         proc->Arrival_time = ff[1];
         proc->Running_time = ff[2];
         proc->Remaining_time = proc->Running_time;
-        proc->Priority = ff[3];
+        proc->Priority = (mode == SJF)?ff[2]:ff[3];
         proc->Waiting_time = 0;
         proc->TA = 0;
         proc->W_TA = 0;
@@ -62,9 +62,9 @@ void remove_From_Circular(Process_List *C_Queue, int id)
     // If this is the last node to be deleted
     if (C_Queue->front->Process_Data.Process_ID == id && C_Queue->front == C_Queue->rear)
     {
+        free(C_Queue->front);
         C_Queue->front = NULL;
         C_Queue->rear = NULL;
-        free(C_Queue->front);
         return;
     }
 

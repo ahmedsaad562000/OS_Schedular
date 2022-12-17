@@ -34,6 +34,8 @@ int main(int agrc, char *argv[])
 
     // TODO The process needs to get the remaining time from somewhere
     // remainingtime = ??;
+
+    // semaphore 
     while (remainingtime > 0)
     {
         x = getClk();
@@ -41,6 +43,7 @@ int main(int agrc, char *argv[])
         if (follow != x)
         {
             follow = x;
+           if(remainingtime == 1){printf("<<<<<<<<<<<<<<<<<<<< Process %d BEFORE SEM >>>>>>>>>>>>>>>>>\n",pid);};
             down(sem);
             --remainingtime;
             printf("------------------------------------------------------------\n");

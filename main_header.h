@@ -13,6 +13,7 @@
 #include <unistd.h>
 #include <signal.h>
 #include <string.h>
+#include "Semaphore.h"
 #define atoa(x) #x
 
 /**
@@ -70,10 +71,10 @@ void destroyClk(bool terminateAll)
 /* Enum for Process states */
 typedef enum
 {
-    STARTED,
-    FINISHED,
-    STOPPED,
-    RESUMED
+    STARTED = 0,
+    FINISHED = 1,
+    STOPPED = 2,
+    RESUMED = 3
 } Process_States;
 /* Enum for Scheduling Algorithm */
 typedef enum
@@ -91,7 +92,7 @@ typedef struct
     int Arrival_time;
     int Running_time;
     int TA;
-    int W_TA;
+    float W_TA;
     int Remaining_time;
     int Waiting_time;
     int Priority;
@@ -136,5 +137,14 @@ Process *peekIntoPriorityQueue(Priority_Process_List *P_Queue);
 void popFromPriorityQueue(Priority_Process_List *P_Queue);
 void pushIntoPriorityQueue(Priority_Process_List *P_Queue, Process *newProcess);
 int isPriorityQueueEmpty(Priority_Process_List *P_Queue);
+
+/*SJF*/
+void Add_waiting_SJF(Priority_Process_List *P_Queue);
+int RUN_CURR_PROCESS(struct Processes_Node *curr_Proc , int* Process_Semaphore, Priority_Process_List *P_Queue , int Time , FILE* processess_file);
+void COPY_then_DEQUEUE_HEAD(struct Processes_Node *curr_Proc , Priority_Process_List *P_Queue);
+/*Print*/
+void PRINT_CURR_PROCESS(struct Processes_Node *curr_Proc , int Time, FILE* processess_file);
+void Close_file(FILE *file);
+void Open_file_to_write(char *FileName , FILE *file);
 
 #endif
