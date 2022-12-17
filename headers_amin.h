@@ -9,7 +9,7 @@ void Read_file(Process_List *LinkedList, char *FileName , int mode)
 {
     Process *proc = (Process *)malloc(sizeof(Process));
     FILE *pFile;
-    pFile = fopen("processes.txt", "r");
+    pFile = fopen(FileName, "r");
     char line[256];
     int ff[4];
     while (fgets(line, sizeof(line), pFile))
