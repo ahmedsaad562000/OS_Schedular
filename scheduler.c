@@ -310,7 +310,6 @@ void Round_Robin(int *Process_Semaphore, int Time)
     /*Check if we reach the quantum to switch or Remaining time is zero*/
     if (quanta == 0 || curr_Proc->Process_Data.Remaining_time == 0)
     {
-        if (quanta == 0)
             quanta = q;
         /* ------------ switch to next pr ----------------------- */
         struct Processes_Node *to_delete;
@@ -367,6 +366,7 @@ void Round_Robin(int *Process_Semaphore, int Time)
             if (IsEmpty_Queue(&circular_Queue_RR))
             {
                 curr_Proc = NULL;
+                ++cpu_waiting_time;
             }
         }
     }
