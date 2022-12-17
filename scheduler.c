@@ -10,6 +10,7 @@ int total_waiting_time = 0;
 float total_WTA_time = 0;
 int Count_OF_Processes;
 int follow;
+int first_clk= 0;
 
 const char *states[4] = {"STARTED", "FINISHED", "STOPPED", "RESUMED"};
 /*Semaphore IDs array*/
@@ -66,7 +67,7 @@ int main(int argc, char *argv[])
     initClk();
     printf("I'm the schedular from inside my file :)\n ");
     int x = getClk();
-
+    first_clk = x;
     processess_file = fopen(Process_files_path, "wt");
     fputs("#At time x process state arr w total z remain y wait k\n", processess_file);
 
@@ -120,7 +121,7 @@ int main(int argc, char *argv[])
         if (follow != x)
         {
             follow = x;
-            printf("Schedular: Current Time is %d\n", x);
+            printf("Schedular: Current Time is %d\n real_count_of_process = %d , current count = %d\n", x , Count_OF_Processes , finished_process_count );
 
             /*Enter when recieve new processes from generator*/
             while (rec_value != -1)
@@ -260,9 +261,11 @@ int main(int argc, char *argv[])
 
             /*Make rec_value = 1 to re-enter the check recieved loop again*/
             rec_value = 1;
+
             /*IF Schedular finished its job it Terminates*/
             if (finished_process_count == Count_OF_Processes)
             {
+                cpu_waiting_time+=first_clk;
                 // if(mode== SJF){follow++;cpu_waiting_time++;}
                 char line_to_print[256];
 
@@ -578,6 +581,7 @@ void handler(int signum)
 {
     if (finished_process_count != Count_OF_Processes)
     {
+        cpu_waiting_time+=first_clk;
         char line_to_print[256];
         sprintf(line_to_print, "CPU utilization = %.2f %%\nAvg WTA = %.2f\nAvg Waiting = %.2f \n", ((float)cpu_waiting_time * 100) / (float)follow, total_WTA_time / Count_OF_Processes, (float)total_waiting_time / (float)Count_OF_Processes);
         fputs(line_to_print, CPU_file);

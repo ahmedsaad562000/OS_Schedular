@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
         perror("Error in create msg queue");
         exit(-1);
     }
-    mode = atoi(argv[2]);
+    mode = atoi(argv[3]);
     signal(SIGINT, clearResources);
     signal(SIGUSR1, clearResources);
     // TODO Initialization
@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
 
     if (mode == RR || mode == MLFL)
     {
-        q = atoi(argv[4]);
+        q = atoi(argv[5]);
     }
     // 3. Initiate and create the scheduler and clock processes.
 
