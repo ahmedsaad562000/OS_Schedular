@@ -225,8 +225,8 @@ int main(int argc, char *argv[])
                 }
                 else
                 {
-                    ++cpu_waiting_time;
                     /*Increase the waiting time for schedular*/
+                    ++cpu_waiting_time;
                 }
 
                 break;
@@ -346,6 +346,7 @@ void Round_Robin(int *Process_Semaphore, int Time)
             if (IsEmpty_Queue(&circular_Queue_RR))
             {
                 curr_Proc = NULL;
+                ++cpu_waiting_time;
             }
         }
     }
