@@ -132,10 +132,9 @@ void remove_From_Circular(Process_List *C_Queue, int id);
 
 /*Ali's functions*/
 Process *newProcess(int Process_ID, int Arrival_time, int Running_time, int TA, int W_TA, int Remaining_time, int Waiting_time, int Priority, Process_States State);
-struct Processes_Node *newPriorityQueueNode(Process *N);
-Process *peekIntoPriorityQueue(Priority_Process_List* P_Queue);
-void popFromPriorityQueue(Priority_Process_List* P_Queue);
-void pushIntoPriorityQueue(Priority_Process_List* P_Queue, Process *newProcess);
-int isPriorityQueueEmpty(Priority_Process_List* P_Queue);
+Process *peekIntoPriorityQueue(Priority_Process_List *P_Queue);
+void popFromPriorityQueue(Priority_Process_List *P_Queue);
+void pushIntoPriorityQueue(Priority_Process_List *P_Queue, Process *newProcess);
+int isPriorityQueueEmpty(Priority_Process_List *P_Queue);
 
 #endif
