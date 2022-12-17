@@ -132,6 +132,8 @@ void clearResources(int signum)
     destroyClk(true);
     // TODO Clears all resources in case of interruption or finished
     msgctl(PG_TO_SCH_MSG_QUE_ID, IPC_RMID, NULL);
+    kill(SIGKILL,clk);
     kill(SIGINT,sch);
-    killpg(getpgrp(), SIGKILL);
+    exit(0);
+    //killpg(getpgrp(), SIGKILL);
 }

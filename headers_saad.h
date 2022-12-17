@@ -73,8 +73,3 @@ void COPY_then_DEQUEUE_HEAD(struct Processes_Node *curr_Proc , Priority_Process_
     fclose(file);
 }*/
 
-void finish_all()
-{
-
-
-}

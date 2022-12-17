@@ -62,9 +62,9 @@ void remove_From_Circular(Process_List *C_Queue, int id)
     // If this is the last node to be deleted
     if (C_Queue->front->Process_Data.Process_ID == id && C_Queue->front == C_Queue->rear)
     {
+        free(C_Queue->front);
         C_Queue->front = NULL;
         C_Queue->rear = NULL;
-        free(C_Queue->front);
         return;
     }
 

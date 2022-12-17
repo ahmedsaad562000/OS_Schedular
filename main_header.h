@@ -137,7 +137,7 @@ struct Processes_Node *newPriorityQueueNode(Process *N);
 Process *peekIntoPriorityQueue(Priority_Process_List* P_Queue);
 void popFromPriorityQueue(Priority_Process_List* P_Queue);
 void pushIntoPriorityQueue(Priority_Process_List* P_Queue, Process *newProcess);
-bool isPriorityQueueEmpty(Priority_Process_List* P_Queue);
+int isPriorityQueueEmpty(Priority_Process_List* P_Queue);
 
 /*SJF*/
 void Add_waiting_SJF(Priority_Process_List *P_Queue);

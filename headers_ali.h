@@ -93,7 +93,7 @@ void pushIntoPriorityQueue(Priority_Process_List *P_Queue, Process *newProcess)
     }
 }
 
-bool isPriorityQueueEmpty(Priority_Process_List *P_Queue)
+int isPriorityQueueEmpty(Priority_Process_List *P_Queue)
 {
     return P_Queue->head == NULL;
 }
