@@ -5,7 +5,7 @@
 /**************************** Functions Definitions **************************/
 
 /* Function to Read from file and insert it into linked list*/
-void Read_file(Process_List *LinkedList, char *FileName , int mode)
+void Read_file(Process_List *LinkedList, char *FileName, int mode)
 {
     Process *proc = (Process *)malloc(sizeof(Process));
     FILE *pFile;
@@ -33,7 +33,7 @@ void Read_file(Process_List *LinkedList, char *FileName , int mode)
         proc->Arrival_time = ff[1];
         proc->Running_time = ff[2];
         proc->Remaining_time = proc->Running_time;
-        proc->Priority = (mode == SJF)?ff[2]:ff[3];
+        proc->Priority = (mode == SJF) ? ff[2] : ff[3];
         proc->Waiting_time = 0;
         proc->TA = 0;
         proc->W_TA = 0;
@@ -88,9 +88,9 @@ void remove_From_Circular(Process_List *C_Queue, int id)
         {
             // element found
             delete_node = current;
-            if(delete_node ==C_Queue->rear)
+            if (delete_node == C_Queue->rear)
             {
-                C_Queue->rear=prev;
+                C_Queue->rear = prev;
             }
             prev->Next = current->Next;
             free(delete_node);
@@ -115,7 +115,7 @@ void calc_Proc_waiting(Process_List *C_Queue, struct Processes_Node *curr_Proc)
     {
         return;
     }
-    if(C_Queue->front != curr_Proc)
+    if (C_Queue->front != curr_Proc)
     {
         ++C_Queue->front->Process_Data.Waiting_time;
     }
@@ -132,10 +132,10 @@ void calc_Proc_waiting(Process_List *C_Queue, struct Processes_Node *curr_Proc)
 }
 
 /* Function to increase waiting time for not runing processes used for HPF Algorithm */
-void calc_Proc_waiting_Prio(Priority_Process_List *P_Queue)
+void calc_Proc_waiting_Prio(Process_List *P_Queue)
 {
     /*inc waiting for not runing processes*/
-    struct Processes_Node *current = P_Queue->head->Next;
+    struct Processes_Node *current = P_Queue->front->Next;
     while (current != NULL)
     {
         ++current->Process_Data.Waiting_time;

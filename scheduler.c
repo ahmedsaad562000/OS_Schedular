@@ -27,7 +27,7 @@ struct Processes_Node *curr_Proc = NULL;
 int quanta;
 
 /*HPF-SJF Variables*/
-Priority_Process_List Priority_List_HPF_SJF;
+Process_List Priority_List_HPF_SJF;
 
 /*Multi-Level Variables*/
 int currentLevel = 0;
@@ -97,15 +97,15 @@ int main(int argc, char *argv[])
     /*MultiLevel VARIABLES INITIALIZE*/
     for (int i = 0; i < 10; i++)
     {
-        m.listOfQueues[i].head = NULL;
+        m.listOfQueues[i].front = NULL;
     }
-    m.FinishedProcesses.head = NULL;
-    m.toBeReturnedToItsLevel.head = NULL;
+    m.toBeReturnedToItsLevel.front = NULL;
 
     if (mode == RR || mode == MLFL)
     {
         q = atoi(argv[3]);
     }
+    quantamsLeft = q;
     // MSG_QUEUE between Process generator and schedular.
     int PG_TO_SCH_MSG_QUE_ID = msgget(msg_queue_key, 0666 | IPC_CREAT);
     printf("Schedular values: mode = %d , msg_key = %d, q = %d , msg_queue_id = %d\n", mode, msg_queue_key, q, PG_TO_SCH_MSG_QUE_ID);
@@ -183,7 +183,7 @@ int main(int argc, char *argv[])
                         {
                             printf("\n from If condition \n");
                             pushIntoPriorityQueue(&Priority_List_HPF_SJF, &process_to_be_recieved.Process_Data);
-                            curr_Proc = Priority_List_HPF_SJF.head;
+                            curr_Proc = Priority_List_HPF_SJF.front;
                             break;
                         }
                         pushIntoPriorityQueue(&Priority_List_HPF_SJF, &process_to_be_recieved.Process_Data);
@@ -194,7 +194,7 @@ int main(int argc, char *argv[])
                         if (IsEmpty_Queue(&circular_Queue_RR)) /*first insertion in ready queue*/
                         {
                             Insert_Circular_Queue(&circular_Queue_RR, &process_to_be_recieved.Process_Data);
-                            curr_Proc = circular_Queue_RR.front; /*intialize current pointer to be pointing to head of circular queue*/
+                            curr_Proc = circular_Queue_RR.front; /*intialize current pointer to be pointing to front of circular queue*/
                             break;
                         }
                         Insert_Circular_Queue(&circular_Queue_RR, &process_to_be_recieved.Process_Data);
@@ -304,7 +304,7 @@ void Round_Robin(int *Process_Semaphore, int Time)
     {
         curr_Proc->Process_Data.State = STARTED;
         startt = 1;
-        PRINT_CURR_PROCESS(curr_Proc, Time, processess_file);
+        PRINT_CURR_PROCESS(&curr_Proc->Process_Data, Time, processess_file);
     }
 
     /*Check if we reach the quantum to switch or Remaining time is zero*/
@@ -331,7 +331,7 @@ void Round_Robin(int *Process_Semaphore, int Time)
             }
 
             /*Print finish process information*/
-            PRINT_CURR_PROCESS(to_delete, Time, processess_file);
+            PRINT_CURR_PROCESS(&to_delete->Process_Data, Time, processess_file);
 
             /*Switch process*/
             curr_Proc = curr_Proc->Next;
@@ -346,7 +346,7 @@ void Round_Robin(int *Process_Semaphore, int Time)
             {
                 curr_Proc->Process_Data.State = RESUMED;
             }
-            PRINT_CURR_PROCESS(curr_Proc, Time, processess_file);
+            PRINT_CURR_PROCESS(&curr_Proc->Process_Data, Time, processess_file);
         }
 
         /*Enter if current process finishes execution*/
@@ -357,7 +357,7 @@ void Round_Robin(int *Process_Semaphore, int Time)
                 /*Print finish process information*/
                 to_delete->Process_Data.State = FINISHED;
                 finished_process_count++;
-                PRINT_CURR_PROCESS(to_delete, Time, processess_file);
+                PRINT_CURR_PROCESS(&to_delete->Process_Data, Time, processess_file);
             }
             /*Calculate waiting time & WTA time for schedular*/
             total_waiting_time += to_delete->Process_Data.Waiting_time;
@@ -389,77 +389,77 @@ void HPF_Algo(int *Process_Semaphore, int Time)
 {
     /*Functions to be performed each clk*/
     printf("******************************************************************\n");
-    printf("State of  %d  is: %d and remaining is %d\n", Priority_List_HPF_SJF.head->Process_Data.Process_ID, Priority_List_HPF_SJF.head->Process_Data.State, Priority_List_HPF_SJF.head->Process_Data.Remaining_time);
+    printf("State of  %d  is: %d and remaining is %d\n", Priority_List_HPF_SJF.front->Process_Data.Process_ID, Priority_List_HPF_SJF.front->Process_Data.State, Priority_List_HPF_SJF.front->Process_Data.Remaining_time);
     printf("******************************************************************\n");
 
     /*Variable to prevent enter resumed condition if started*/
     static int startt = 0;
     static Process_States P_state = STOPPED;
 
-    up(Process_Semaphore[Priority_List_HPF_SJF.head->Process_Data.Process_ID - 1]); /*up the current semaphore*/
+    up(Process_Semaphore[Priority_List_HPF_SJF.front->Process_Data.Process_ID - 1]); /*up the current semaphore*/
 
     /*Check if process primited and stopped*/
-    if (curr_Proc->Process_Data.Process_ID != Priority_List_HPF_SJF.head->Process_Data.Process_ID)
+    if (curr_Proc->Process_Data.Process_ID != Priority_List_HPF_SJF.front->Process_Data.Process_ID)
     {
         // print information for Preemtid Process
         curr_Proc->Process_Data.State = STOPPED;
         P_state = STOPPED;
         // if(P_state != curr_Proc->Process_Data.State)
         // {
-        //     PRINT_CURR_PROCESS(Priority_List_HPF_SJF.head, Time, processess_file);
+        //     PRINT_CURR_PROCESS(Priority_List_HPF_SJF.front, Time, processess_file);
         //     P_state = curr_Proc->Process_Data.State;
         // }
         if (curr_Proc)
         {
-            PRINT_CURR_PROCESS(curr_Proc, Time, processess_file);
+            PRINT_CURR_PROCESS(&curr_Proc->Process_Data, Time, processess_file);
         }
-        curr_Proc = Priority_List_HPF_SJF.head;
+        curr_Proc = Priority_List_HPF_SJF.front;
     }
 
     /*Check if remaining time for runing process is zero */
-    if (Priority_List_HPF_SJF.head->Process_Data.Remaining_time == 0)
+    if (Priority_List_HPF_SJF.front->Process_Data.Remaining_time == 0)
     {
         /*switch to next process and remove the process from ready queue*/
-        Priority_List_HPF_SJF.head->Process_Data.State = FINISHED;
+        Priority_List_HPF_SJF.front->Process_Data.State = FINISHED;
         finished_process_count++;
         P_state = FINISHED;
         startt = 0;
 
         /*Print finish process information*/
-        PRINT_CURR_PROCESS(Priority_List_HPF_SJF.head, Time, processess_file);
-        total_waiting_time += Priority_List_HPF_SJF.head->Process_Data.Waiting_time;
-        total_WTA_time += Priority_List_HPF_SJF.head->Process_Data.W_TA;
-        up(Process_Semaphore[Priority_List_HPF_SJF.head->Process_Data.Process_ID - 1]); /*up the current semaphore*/
-        popFromPriorityQueue(&Priority_List_HPF_SJF);
-        // make pointer points to new head
-        curr_Proc = Priority_List_HPF_SJF.head;
+        PRINT_CURR_PROCESS(&Priority_List_HPF_SJF.front->Process_Data, Time, processess_file);
+        total_waiting_time += Priority_List_HPF_SJF.front->Process_Data.Waiting_time;
+        total_WTA_time += Priority_List_HPF_SJF.front->Process_Data.W_TA;
+        up(Process_Semaphore[Priority_List_HPF_SJF.front->Process_Data.Process_ID - 1]); /*up the current semaphore*/
+        popFromQueue(&Priority_List_HPF_SJF);
+        // make pointer points to new front
+        curr_Proc = Priority_List_HPF_SJF.front;
     }
 
-    if (Priority_List_HPF_SJF.head != NULL)
+    if (Priority_List_HPF_SJF.front != NULL)
     {
         /*Set States of runing Process*/
-        if (Priority_List_HPF_SJF.head->Process_Data.Remaining_time == Priority_List_HPF_SJF.head->Process_Data.Running_time)
+        if (Priority_List_HPF_SJF.front->Process_Data.Remaining_time == Priority_List_HPF_SJF.front->Process_Data.Running_time)
         {
-            Priority_List_HPF_SJF.head->Process_Data.State = STARTED;
+            Priority_List_HPF_SJF.front->Process_Data.State = STARTED;
             if (P_state != STARTED)
             {
-                PRINT_CURR_PROCESS(Priority_List_HPF_SJF.head, Time, processess_file);
+                PRINT_CURR_PROCESS(&Priority_List_HPF_SJF.front->Process_Data, Time, processess_file);
                 P_state = STARTED;
             }
             startt = 1;
         }
         else if (startt != 1)
         {
-            Priority_List_HPF_SJF.head->Process_Data.State = RESUMED;
+            Priority_List_HPF_SJF.front->Process_Data.State = RESUMED;
             if (P_state != RESUMED)
             {
-                PRINT_CURR_PROCESS(Priority_List_HPF_SJF.head, Time, processess_file);
+                PRINT_CURR_PROCESS(&Priority_List_HPF_SJF.front->Process_Data, Time, processess_file);
                 P_state = RESUMED;
             }
         }
-        // PRINT_CURR_PROCESS(Priority_List_HPF_SJF.head, Time, processess_file);
-        calc_Proc_waiting_Prio(&Priority_List_HPF_SJF);            /*Function to increase waiting time for not runing processes in ready queue*/
-        --Priority_List_HPF_SJF.head->Process_Data.Remaining_time; /*decrease remaining time for the runing process*/
+        // PRINT_CURR_PROCESS(Priority_List_HPF_SJF.front, Time, processess_file);
+        calc_Proc_waiting_Prio(&Priority_List_HPF_SJF);             /*Function to increase waiting time for not runing processes in ready queue*/
+        --Priority_List_HPF_SJF.front->Process_Data.Remaining_time; /*decrease remaining time for the runing process*/
     }
     if (isPriorityQueueEmpty(&Priority_List_HPF_SJF))
         cpu_waiting_time++;
@@ -516,7 +516,7 @@ void SJF_Algo(int *Process_Semaphore, int Time)
             /////////////////////////////////////////////////////////////////////////////////////////
 
             /*print_process_start*/
-            PRINT_CURR_PROCESS(curr_Proc, Time, processess_file);
+            PRINT_CURR_PROCESS(&curr_Proc->Process_Data, Time, processess_file);
 
             /*run_process*/
             check = RUN_CURR_PROCESS(curr_Proc, Process_Semaphore, &Priority_List_HPF_SJF, Time, processess_file);
@@ -536,7 +536,7 @@ void SJF_Algo(int *Process_Semaphore, int Time)
 
             COPY_then_DEQUEUE_HEAD(curr_Proc, &Priority_List_HPF_SJF);
             /*print_process_start*/
-            PRINT_CURR_PROCESS(curr_Proc, Time, processess_file);
+            PRINT_CURR_PROCESS(&curr_Proc->Process_Data, Time, processess_file);
 
             check = RUN_CURR_PROCESS(curr_Proc, Process_Semaphore, &Priority_List_HPF_SJF, Time, processess_file);
             process_count += check;
@@ -564,47 +564,30 @@ void SJF_Algo(int *Process_Semaphore, int Time)
 
 void MLF_Algo(int *Process_Semaphore, int Time)
 {
-    if (currentProcess == NULL && AreAllLevelsEmpty(&m) && !isMultiLevelEmpty(&m))
-    {
-        pushAllProcessBackToItsLevel(&m);
-    }
-
-    if (isMultiLevelEmpty(&m))
-    {
-        // there is no process to run in the queue;
-        if (currentProcess == NULL) // no_currently_running_process
-            cpu_waiting_time++;
-        else
-        {
-            runMultiLevelProcess(currentProcess, Process_Semaphore, &m, Time, processess_file);
-            quantamsLeft--;
-        }
-    }
+    if (isMultiLevelEmpty(&m) && currentProcess == NULL)
+        cpu_waiting_time++;
     else
     {
-        if (quantamsLeft != 0)
+        if (currentProcess == NULL)
         {
-            if (currentProcess == NULL)
-            {
-                currentProcess = getNextProcessFromMultiLevel(&m, &currentLevel);
-                // set state
-                setProcessState(currentProcess);
-                // print
-                printProcess(currentProcess, Time, processess_file);
-            }
+            if (AreAllLevelsEmpty(&m))
+                pushAllProcessBackToItsLevel(&m);
+            quantamsLeft = q;
+            currentProcess = getNextProcessFromMultiLevel(&m, &currentLevel);
+            setProcessState(currentProcess);
+            PRINT_CURR_PROCESS(currentProcess, Time + 1, processess_file);
         }
-        else
+
+        runMultiLevelProcess(&currentProcess, currentLevel, Process_Semaphore, &m, Time, processess_file, &finished_process_count);
+        quantamsLeft--;
+        if (quantamsLeft == 0 && currentProcess != NULL)
         {
             quantamsLeft = q;
+            currentProcess->State = STOPPED;
+            PRINT_CURR_PROCESS(currentProcess, Time + 1, processess_file);
             pushIntoNextLevel(currentLevel, currentProcess, &m);
-            currentProcess = getNextProcessFromMultiLevel(&m, &currentLevel);
-            // set state
-            setProcessState(currentProcess);
-            // print
-            printProcess(currentProcess, Time, processess_file);
+            currentProcess = NULL;
         }
-        runMultiLevelProcess(currentProcess, Process_Semaphore, &m, Time, processess_file);
-        quantamsLeft--;
     }
 }
 /*

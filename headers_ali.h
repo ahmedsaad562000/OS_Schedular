@@ -27,62 +27,51 @@ struct Processes_Node *newPriorityQueueNode(Process *N)
     return temp;
 }
 
-Process *peekIntoPriorityQueue(Priority_Process_List *P_Queue)
+Process *peekIntoQueue(Process_List *P_Queue)
 {
     /*if list is already empty*/
-    if (P_Queue->head == NULL)
+    if (P_Queue->front == NULL)
     {
         return NULL;
     }
-    return &P_Queue->head->Process_Data;
+    return &P_Queue->front->Process_Data;
 }
 
-void popFromPriorityQueue(Priority_Process_List *P_Queue)
+void popFromQueue(Process_List *P_Queue)
 {
     /*if list is already empty*/
-    if (P_Queue->head == NULL)
+    if (P_Queue->front == NULL)
     {
         return;
     }
-    struct Processes_Node *temp = P_Queue->head;
-    P_Queue->head = P_Queue->head->Next;
+    struct Processes_Node *temp = P_Queue->front;
+    P_Queue->front = P_Queue->front->Next;
     free(temp);
 }
 
-void pushIntoPriorityQueue(Priority_Process_List *P_Queue, Process *newProcess)
+void pushIntoPriorityQueue(Process_List *P_Queue, Process *newProcess)
 {
     // Create new Node
-    struct Processes_Node *temp = (struct Processes_Node *)malloc(sizeof(struct Processes_Node));
-    temp->priority = newProcess->Priority;
-    temp->Process_Data.Arrival_time = newProcess->Arrival_time;
-    temp->Process_Data.PID = newProcess->PID;
-    temp->Process_Data.Process_ID = newProcess->Process_ID;
-    temp->Process_Data.Remaining_time = newProcess->Remaining_time;
-    temp->Process_Data.Running_time = newProcess->Running_time;
-    temp->Process_Data.State = newProcess->State;
-    temp->Process_Data.TA = newProcess->TA;
-    temp->Process_Data.W_TA = newProcess->W_TA;
-    temp->Process_Data.Waiting_time = newProcess->Waiting_time;
-    temp->Process_Data.Priority = newProcess->Priority;
+    struct Processes_Node *temp = newPriorityQueueNode(newProcess);
     /*if list is already empty*/
-    if (P_Queue->head == NULL)
+    if (P_Queue->front == NULL)
     {
-        P_Queue->head = temp;
+        P_Queue->front = temp;
         temp->Next = NULL;
         return;
     }
 
-    struct Processes_Node *start = P_Queue->head;
-    struct Processes_Node *prev_start = P_Queue->head;
-    if (P_Queue->head->priority > newProcess->Priority)
+    struct Processes_Node *start = P_Queue->front;
+    struct Processes_Node *prev_start = P_Queue->front;
+    if (P_Queue->front->priority > newProcess->Priority)
     {
-        P_Queue->head->Process_Data.State = STOPPED;
-        temp->Next = P_Queue->head;
-        P_Queue->head = temp;
+        P_Queue->front->Process_Data.State = STOPPED;
+        temp->Next = P_Queue->front;
+        P_Queue->front = temp;
     }
     else
     {
-        start = P_Queue->head->Next;
+        start = P_Queue->front->Next;
         while (start != NULL && start->priority < newProcess->Priority)
         {
             start = start->Next;
@@ -93,36 +82,47 @@ void pushIntoPriorityQueue(Priority_Process_List *P_Queue, Process *newProcess)
     }
 }
 
-int isPriorityQueueEmpty(Priority_Process_List *P_Queue)
+int isPriorityQueueEmpty(Process_List *P_Queue)
 {
-    return P_Queue->head == NULL;
+    return P_Queue->front == NULL;
+}
+
+void pushIntoQueue(Process_List *P_Queue, Process *newProcess)
+{
+    struct Processes_Node *temp = newPriorityQueueNode(newProcess);
+    /*if list is already empty*/
+    if (P_Queue->front == NULL)
+    {
+        P_Queue->front = temp;
+        temp->Next = NULL;
+        return;
+    }
 }
 
 void pushIntoMultiLevel(MultiLevel *m, Process *newProcess)
 {
     int priority = newProcess->Priority;
-    Priority_Process_List *priorityList = &m->listOfQueues[priority];
-    pushIntoPriorityQueue(priorityList, newProcess);
+    Process_List *priorityList = &m->listOfQueues[priority];
+    Insert_Process(priorityList, newProcess);
 }
 void pushIntoNextLevel(int currLevel, Process *processToBePushedIntoNextLevel, MultiLevel *m)
 {
     int priority = currLevel + 1;
-    if (priority == 10)
+    if (priority != 10)
     {
-        pushIntoPriorityQueue(&m->toBeReturnedToItsLevel, processToBePushedIntoNextLevel);
+        Process_List *priorityList = &m->listOfQueues[priority];
+        Insert_Process(priorityList, processToBePushedIntoNextLevel);
     }
     else
-    {
-        Priority_Process_List *priorityList = &m->listOfQueues[priority];
-        pushIntoPriorityQueue(priorityList, processToBePushedIntoNextLevel);
-    }
-    popFromPriorityQueue(&m->listOfQueues[priority - 1]);
+        Insert_Process(&m->toBeReturnedToItsLevel, processToBePushedIntoNextLevel);
+
+    popFromQueue(&m->listOfQueues[currLevel]);
 }
 int AreAllLevelsEmpty(MultiLevel *m)
 {
     for (int i = 0; i < 10; i++)
     {
-        if (m->listOfQueues[i].head != NULL)
+        if (m->listOfQueues[i].front != NULL)
         {
             return 0;
         }
@@ -131,7 +131,7 @@ int AreAllLevelsEmpty(MultiLevel *m)
 }
 int isMultiLevelEmpty(MultiLevel *m)
 {
-    if (m->toBeReturnedToItsLevel.head == NULL && AreAllLevelsEmpty(m))
+    if (m->toBeReturnedToItsLevel.front == NULL && AreAllLevelsEmpty(m))
         return 1;
     else
         return 0;
@@ -140,9 +140,9 @@ int pushAllProcessBackToItsLevel(MultiLevel *m)
 {
     while (!isPriorityQueueEmpty(&m->toBeReturnedToItsLevel))
     {
-        Process *processData = peekIntoPriorityQueue(&m->toBeReturnedToItsLevel);
+        Process *processData = peekIntoQueue(&m->toBeReturnedToItsLevel);
         pushIntoMultiLevel(m, processData);
-        popFromPriorityQueue(&m->toBeReturnedToItsLevel);
+        popFromQueue(&m->toBeReturnedToItsLevel);
     }
 }
 Process *getNextProcessFromMultiLevel(MultiLevel *m, int *currentLevel)
@@ -152,44 +152,37 @@ Process *getNextProcessFromMultiLevel(MultiLevel *m, int *currentLevel)
         if (!isPriorityQueueEmpty(&m->listOfQueues[i]))
         {
             *currentLevel = i;
-            return peekIntoPriorityQueue(&m->listOfQueues[i]);
+            return peekIntoQueue(&m->listOfQueues[i]);
         }
     }
     return NULL;
 }
-void moveProcessToFinished(int currLevel, Process *processFinished, MultiLevel *m)
-{
-    pushIntoPriorityQueue(&m->FinishedProcesses, processFinished);
-    popFromPriorityQueue(&m->listOfQueues[currLevel]);
-}
-void AddWaitingMultiLevel(MultiLevel *m)
+
+void AddWaitingMultiLevel(MultiLevel *m, Process *currentProcess)
 {
     for (int i = 0; i < 10; i++)
     {
         Add_waiting_SJF(&m->listOfQueues[i]);
     }
     Add_waiting_SJF(&m->toBeReturnedToItsLevel);
+    --currentProcess->Waiting_time;
 }
-void printProcess(Process *processToPrint, int Time, FILE *processess_file)
-{
-    struct Processes_Node *temp;
-    temp->Process_Data = *processToPrint;
-    PRINT_CURR_PROCESS(temp, Time + 1, processess_file);
-}
-void runMultiLevelProcess(Process *curr_Proc, int *Process_Semaphore, MultiLevel *m, int Time, FILE *processess_file)
-{
 
+void runMultiLevelProcess(Process **currentProcess, int currentLevel, int *Process_Semaphore, MultiLevel *m, int Time, FILE *processess_file, int *finishedProcessCount)
+{
     /*run_curr_process_logic*/
-    up(Process_Semaphore[curr_Proc->Process_ID - 1]);
-    AddWaitingMultiLevel(m);     /*Function to increase waiting time for not runing processes in ready queue*/
-    --curr_Proc->Remaining_time; /*decrease remaining time for the runing process*
-    ////////////////////////////
+    up(Process_Semaphore[(*currentProcess)->Process_ID - 1]);
+    AddWaitingMultiLevel(m, (*currentProcess)); /*Function to increase waiting time for not runing processes in ready queue*/
+    --(*currentProcess)->Remaining_time;        /*decrease remaining time for the runing process*/
     /*check if this clock was process last_clock*/
-    if (curr_Proc->Remaining_time == 0)
+    if ((*currentProcess)->Remaining_time == 0)
     {
-        curr_Proc->State = FINISHED;
+        (*currentProcess)->State = FINISHED;
         /*Print finish process information*/
-        printProcess(curr_Proc, Time + 1, processess_file);
+        PRINT_CURR_PROCESS((*currentProcess), Time + 1, processess_file);
+        popFromQueue(&m->listOfQueues[currentLevel]);
+        *currentProcess = NULL;
+        ++*finishedProcessCount;
     }
 }
 
