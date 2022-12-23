@@ -177,6 +177,7 @@ void runMultiLevelProcess(Process **currentProcess, int currentLevel, int *Proce
     /*check if this clock was process last_clock*/
     if ((*currentProcess)->Remaining_time == 0)
     {
+        up(Process_Semaphore[(*currentProcess)->Process_ID - 1]);
         (*currentProcess)->State = FINISHED;
         /*Print finish process information*/
         PRINT_CURR_PROCESS((*currentProcess), Time + 1, processess_file);

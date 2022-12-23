@@ -575,7 +575,7 @@ void MLF_Algo(int *Process_Semaphore, int Time)
             quantamsLeft = q;
             currentProcess = getNextProcessFromMultiLevel(&m, &currentLevel);
             setProcessState(currentProcess);
-            PRINT_CURR_PROCESS(currentProcess, Time + 1, processess_file);
+            PRINT_CURR_PROCESS(currentProcess, Time, processess_file);
         }
 
         runMultiLevelProcess(&currentProcess, currentLevel, Process_Semaphore, &m, Time, processess_file, &finished_process_count);
@@ -584,7 +584,7 @@ void MLF_Algo(int *Process_Semaphore, int Time)
         {
             quantamsLeft = q;
             currentProcess->State = STOPPED;
-            PRINT_CURR_PROCESS(currentProcess, Time + 1, processess_file);
+            PRINT_CURR_PROCESS(currentProcess, Time, processess_file);
             pushIntoNextLevel(currentLevel, currentProcess, &m);
             currentProcess = NULL;
         }
