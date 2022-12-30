@@ -98,29 +98,52 @@ void pushIntoQueue(Process_List *P_Queue, Process *newProcess)
         return;
     }
 }
+void pushIntoQueueForMultiLevel(Process_List *Queue, Process *N)
+{
+    // Allocate memory for new node
+    struct Processes_Node *link = newPriorityQueueNode(N);
+    // insert the data to the new node and make the next point to null
+
+    // If head is empty, create new list
+    if (Queue->front == NULL)
+    {
+        Queue->front = link;
+        Queue->rear = link;
+        return;
+    }
+    /* If not empty --> insert after Rear */
+    link->Next = NULL;
+    Queue->rear->Next = link;
+    Queue->rear = link;
+    return;
+}
 
 void pushIntoMultiLevel(MultiLevel *m, Process *newProcess)
 {
     int priority = newProcess->Priority;
     Process_List *priorityList = &m->listOfQueues[priority];
-    Insert_Process(priorityList, newProcess);
+    pushIntoQueueForMultiLevel(priorityList, newProcess);
 }
 void pushIntoNextLevel(int currLevel, Process *processToBePushedIntoNextLevel, MultiLevel *m)
 {
     int priority = currLevel + 1;
-    if (priority != 10)
+    if (priority != 11)
     {
         Process_List *priorityList = &m->listOfQueues[priority];
-        Insert_Process(priorityList, processToBePushedIntoNextLevel);
+        pushIntoQueueForMultiLevel(priorityList, processToBePushedIntoNextLevel);
     }
     else
-        Insert_Process(&m->toBeReturnedToItsLevel, processToBePushedIntoNextLevel);
-
+    {
+        printf("pushing into process to be pushed into next level\n");
+        pushIntoQueueForMultiLevel(&m->toBeReturnedToItsLevel, processToBePushedIntoNextLevel);
+    }
+    printf("popping from currLevel: %d\n", currLevel);
     popFromQueue(&m->listOfQueues[currLevel]);
+    printf(("popped\n"));
 }
 int AreAllLevelsEmpty(MultiLevel *m)
 {
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < 11; i++)
     {
         if (m->listOfQueues[i].front != NULL)
         {
@@ -141,16 +164,20 @@ int pushAllProcessBackToItsLevel(MultiLevel *m)
     while (!isPriorityQueueEmpty(&m->toBeReturnedToItsLevel))
     {
         Process *processData = peekIntoQueue(&m->toBeReturnedToItsLevel);
+        printf("proces id:%d process remaining time: %d prio: %d\n", processData->Process_ID, processData->Remaining_time, processData->Priority);
         pushIntoMultiLevel(m, processData);
         popFromQueue(&m->toBeReturnedToItsLevel);
     }
 }
 Process *getNextProcessFromMultiLevel(MultiLevel *m, int *currentLevel)
 {
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < 11; i++)
     {
         if (!isPriorityQueueEmpty(&m->listOfQueues[i]))
         {
+            printf("id:%d", peekIntoQueue(&m->listOfQueues[i])->Process_ID);
+
+            printf("process head: %d and i = %d \n", peekIntoQueue(&m->listOfQueues[i])->Process_ID, i);
             *currentLevel = i;
             return peekIntoQueue(&m->listOfQueues[i]);
         }
@@ -160,7 +187,7 @@ Process *getNextProcessFromMultiLevel(MultiLevel *m, int *currentLevel)
 
 void AddWaitingMultiLevel(MultiLevel *m, Process *currentProcess)
 {
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < 11; i++)
     {
         Add_waiting_SJF(&m->listOfQueues[i]);
     }
@@ -168,23 +195,31 @@ void AddWaitingMultiLevel(MultiLevel *m, Process *currentProcess)
     --currentProcess->Waiting_time;
 }
 
-void runMultiLevelProcess(Process **currentProcess, int currentLevel, int *Process_Semaphore, MultiLevel *m, int Time, FILE *processess_file, int *finishedProcessCount)
+void runMultiLevelProcess(Process **currentProcess, int currentLevel, int *Process_Semaphore, MultiLevel *m, int Time, FILE *processess_file, int *finishedProcessCount , int *total_waiting_time , float *total_WTA_time)
 {
     /*run_curr_process_logic*/
-    up(Process_Semaphore[(*currentProcess)->Process_ID - 1]);
+    printf("currProcess: %d, remaining time: %d", (*currentProcess)->Process_ID, (*currentProcess)->Remaining_time);
+    int x = (*currentProcess)->Process_ID - 1;
+    int y = (*currentProcess)->Remaining_time;
     AddWaitingMultiLevel(m, (*currentProcess)); /*Function to increase waiting time for not runing processes in ready queue*/
     --(*currentProcess)->Remaining_time;        /*decrease remaining time for the runing process*/
     /*check if this clock was process last_clock*/
     if ((*currentProcess)->Remaining_time == 0)
     {
-        up(Process_Semaphore[(*currentProcess)->Process_ID - 1]);
         (*currentProcess)->State = FINISHED;
+ 
         /*Print finish process information*/
         PRINT_CURR_PROCESS((*currentProcess), Time + 1, processess_file);
+       *total_waiting_time += (*currentProcess)->Waiting_time;
+        *total_WTA_time += (*currentProcess)->W_TA;
+
         popFromQueue(&m->listOfQueues[currentLevel]);
         *currentProcess = NULL;
         ++*finishedProcessCount;
+
     }
+    if (y > 1)
+        up(Process_Semaphore[x]);
 }
 
 void setProcessState(Process *p)

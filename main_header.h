@@ -149,7 +149,7 @@ int isMultiLevelEmpty(MultiLevel *m);
 int pushAllProcessBackToItsLevel(MultiLevel *m);
 Process *getNextProcessFromMultiLevel(MultiLevel *m, int *currentLevel);
 void AddWaitingMultiLevel(MultiLevel *m, Process *currentProcess);
-void runMultiLevelProcess(Process **currentProcess, int currentLevel, int *Process_Semaphore, MultiLevel *m, int Time, FILE *processess_file, int *finishedProcessCount);
+void runMultiLevelProcess(Process **currentProcess, int currentLevel, int *Process_Semaphore, MultiLevel *m, int Time, FILE *processess_file, int *finishedProcessCount , int *total_waiting_time , float *total_WTA_time);
 /*SJF*/
 void Add_waiting_SJF(Process_List *P_Queue);
 int RUN_CURR_PROCESS(struct Processes_Node *curr_Proc, int *Process_Semaphore, Process_List *P_Queue, int Time, FILE *processess_file);

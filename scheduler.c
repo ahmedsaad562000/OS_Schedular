@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
     /*ROUND ROBIN VARIABLES INITIALIZE*/
     quanta = q;
     /*MultiLevel VARIABLES INITIALIZE*/
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < 11; i++)
     {
         m.listOfQueues[i].front = NULL;
     }
@@ -300,37 +300,38 @@ void Round_Robin(int *Process_Semaphore, int Time)
     static int startt = 0;
     up(Process_Semaphore[curr_Proc->Process_Data.Process_ID - 1]); /*up the current semaphore*/
 
+
+    /*enter if it is the first run for the process*/
     if (curr_Proc->Process_Data.Remaining_time == curr_Proc->Process_Data.Running_time)
     {
         curr_Proc->Process_Data.State = STARTED;
-        startt = 1;
+        startt = 1;  /*make state started*/
         PRINT_CURR_PROCESS(&curr_Proc->Process_Data, Time, processess_file);
     }
 
     /*Check if we reach the quantum to switch or Remaining time is zero*/
     if (quanta == 0 || curr_Proc->Process_Data.Remaining_time == 0)
     {
-
         quanta = q;
 
-        /* ------------ switch to next pr ----------------------- */
+        /* ------------ switch to next pr pointer----------------------- */
         struct Processes_Node *to_delete;
         to_delete = curr_Proc;
 
-        /*Enter only if there is more thaan 1 process*/
+        /*Enter only if there is more than 1 process*/
         if (circular_Queue_RR.front != circular_Queue_RR.rear)
         {
             curr_Proc->Process_Data.State = STOPPED;
             startt = 0;
 
-            /*Print switch old process information*/
+            /*if process is finished*/
             if (curr_Proc->Process_Data.Remaining_time == 0)
             {
                 to_delete->Process_Data.State = FINISHED;
                 finished_process_count++;
             }
 
-            /*Print finish process information*/
+            /*Print stopped process information*/
             PRINT_CURR_PROCESS(&to_delete->Process_Data, Time, processess_file);
 
             /*Switch process*/
@@ -349,10 +350,10 @@ void Round_Robin(int *Process_Semaphore, int Time)
             PRINT_CURR_PROCESS(&curr_Proc->Process_Data, Time, processess_file);
         }
 
-        /*Enter if current process finishes execution*/
+        /*Enter if current process finishes execution(remaining time is 0)*/
         if (to_delete->Process_Data.Remaining_time == 0)
         {
-            if (circular_Queue_RR.front == circular_Queue_RR.rear)
+            if (circular_Queue_RR.front == circular_Queue_RR.rear)  /*so one element in the queue*/
             {
                 /*Print finish process information*/
                 to_delete->Process_Data.State = FINISHED;
@@ -379,6 +380,7 @@ void Round_Robin(int *Process_Semaphore, int Time)
         calc_Proc_waiting(&circular_Queue_RR, curr_Proc); /*Function to increase waiting time for not runing processes in ready queue*/
         --curr_Proc->Process_Data.Remaining_time;         /*decrease remaining time for the runing process*/
     }
+    /*decrease quantum each call*/
     --quanta;
     // printf("\n*_*_*_*_**_*_ Current is: %p *_*_*_*_**_*_\n",curr_Proc);
 }
@@ -399,7 +401,7 @@ void HPF_Algo(int *Process_Semaphore, int Time)
     up(Process_Semaphore[Priority_List_HPF_SJF.front->Process_Data.Process_ID - 1]); /*up the current semaphore*/
 
     /*Check if process primited and stopped*/
-    if (curr_Proc->Process_Data.Process_ID != Priority_List_HPF_SJF.front->Process_Data.Process_ID)
+    if (curr_Proc->Process_Data.Process_ID != Priority_List_HPF_SJF.front->Process_Data.Process_ID && curr_Proc->Process_Data.Remaining_time!=0)
     {
         // print information for Preemtid Process
         curr_Proc->Process_Data.State = STOPPED;
@@ -467,9 +469,15 @@ void HPF_Algo(int *Process_Semaphore, int Time)
 
 void SJF_Algo(int *Process_Semaphore, int Time)
 {
+    // added for timing
     static int process_count = 0;
-    static bool last_up = true;
+    
     finished_process_count = process_count;
+    
+    // added for last_up in the schedular
+    static bool last_up = true;
+    
+    //added to check if process is finished
     static int check = 0;
 
     // there is no process to run in the queue;
@@ -564,27 +572,32 @@ void SJF_Algo(int *Process_Semaphore, int Time)
 
 void MLF_Algo(int *Process_Semaphore, int Time)
 {
+    //check if multilevel levels and buffer are empty
     if (isMultiLevelEmpty(&m) && currentProcess == NULL)
         cpu_waiting_time++;
     else
     {
+        //check if there is no current process running
         if (currentProcess == NULL)
         {
+            //check if levels are empty and buffer is not
             if (AreAllLevelsEmpty(&m))
                 pushAllProcessBackToItsLevel(&m);
+            //reset quantam, get next process to run, and set process state
             quantamsLeft = q;
             currentProcess = getNextProcessFromMultiLevel(&m, &currentLevel);
             setProcessState(currentProcess);
             PRINT_CURR_PROCESS(currentProcess, Time, processess_file);
         }
-
-        runMultiLevelProcess(&currentProcess, currentLevel, Process_Semaphore, &m, Time, processess_file, &finished_process_count);
+        //run process
+        runMultiLevelProcess(&currentProcess, currentLevel, Process_Semaphore, &m, Time, processess_file, &finished_process_count , &total_waiting_time , &total_WTA_time);
         quantamsLeft--;
+        //check if quantam is finsihed
         if (quantamsLeft == 0 && currentProcess != NULL)
         {
             quantamsLeft = q;
             currentProcess->State = STOPPED;
-            PRINT_CURR_PROCESS(currentProcess, Time, processess_file);
+            PRINT_CURR_PROCESS(currentProcess, Time+1, processess_file);
             pushIntoNextLevel(currentLevel, currentProcess, &m);
             currentProcess = NULL;
         }

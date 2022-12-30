@@ -1,5 +1,4 @@
 build:
-	ipcrm -a
 	gcc process_generator.c -o process_generator.out
 	gcc clk.c -o clk.out
 	gcc scheduler.c -o sch.out
@@ -15,5 +14,5 @@ all: build run
 
 run:
 
-	./process_generator.out processes.txt -sch 0 -q 2
+	./process_generator.out processes.txt -sch 1 -q 2
 
