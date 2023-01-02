@@ -14,5 +14,5 @@ all: build run
 
 run:
 
-	./process_generator.out processes.txt -sch 1 -q 2
+	./process_generator.out processes.txt -sch 3 -q 2
 

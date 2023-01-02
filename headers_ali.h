@@ -1,21 +1,5 @@
 #include "main_header.h"
 
-Process *newProcess(int Process_ID, int Arrival_time, int Running_time, int TA, int W_TA, int Remaining_time, int Waiting_time, int Priority, Process_States State)
-{
-    Process *temp = (Process *)malloc(sizeof(Process));
-    temp->Process_ID = Process_ID;
-    temp->Arrival_time = Arrival_time;
-    temp->Running_time = Running_time;
-    temp->TA = TA;
-    temp->W_TA = W_TA;
-    temp->Remaining_time = Remaining_time;
-    temp->Waiting_time = Waiting_time;
-    temp->Priority = Priority;
-    temp->State = State;
-
-    return temp;
-}
-
 struct Processes_Node *newPriorityQueueNode(Process *N)
 {
     int priority = N->Priority;
@@ -164,7 +148,7 @@ int pushAllProcessBackToItsLevel(MultiLevel *m)
     while (!isPriorityQueueEmpty(&m->toBeReturnedToItsLevel))
     {
         Process *processData = peekIntoQueue(&m->toBeReturnedToItsLevel);
-        printf("proces id:%d process remaining time: %d prio: %d\n", processData->Process_ID, processData->Remaining_time, processData->Priority);
+        printf("proces id:%d process remaining time: %d prio: %d memsize: %d\n", processData->Process_ID, processData->Remaining_time, processData->Priority,processData->memsize);
         pushIntoMultiLevel(m, processData);
         popFromQueue(&m->toBeReturnedToItsLevel);
     }
@@ -198,7 +182,8 @@ void AddWaitingMultiLevel(MultiLevel *m, Process *currentProcess)
 void runMultiLevelProcess(Process **currentProcess, int currentLevel, int *Process_Semaphore, MultiLevel *m, int Time, FILE *processess_file, int *finishedProcessCount , int *total_waiting_time , float *total_WTA_time)
 {
     /*run_curr_process_logic*/
-    printf("currProcess: %d, remaining time: %d", (*currentProcess)->Process_ID, (*currentProcess)->Remaining_time);
+    printf("currProcess: %d, remaining time: %d\n", (*currentProcess)->Process_ID, (*currentProcess)->Remaining_time);
+    printf("proces id:%d process remaining time: %d prio: %d memsize: %d\n", (*currentProcess)->Process_ID, (*currentProcess)->Remaining_time, (*currentProcess)->Priority,(*currentProcess)->memsize);
     int x = (*currentProcess)->Process_ID - 1;
     int y = (*currentProcess)->Remaining_time;
     AddWaitingMultiLevel(m, (*currentProcess)); /*Function to increase waiting time for not runing processes in ready queue*/

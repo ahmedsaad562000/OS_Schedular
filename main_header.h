@@ -96,6 +96,7 @@ typedef struct
     int Remaining_time;
     int Waiting_time;
     int Priority;
+    int memsize;
     Process_States State;
 } Process;
 
@@ -137,7 +138,6 @@ struct Processes_Node *Insert_Circular_Queue(Process_List *Queue, Process *N);
 void remove_From_Circular(Process_List *C_Queue, int id);
 
 /*Ali's functions*/
-Process *newProcess(int Process_ID, int Arrival_time, int Running_time, int TA, int W_TA, int Remaining_time, int Waiting_time, int Priority, Process_States State);
 Process *peekIntoPriorityQueue(Process_List *P_Queue);
 void popFromQueue(Process_List *P_Queue);
 void pushIntoPriorityQueue(Process_List *P_Queue, Process *newProcess);

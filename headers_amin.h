@@ -38,6 +38,7 @@ void Read_file(Process_List *LinkedList, char *FileName, int mode)
         proc->TA = 0;
         proc->W_TA = 0;
         proc->State = STOPPED;
+        proc->memsize = ff[4];
 
         /*Insert process into linked list*/
         Insert_Process(LinkedList, proc);
