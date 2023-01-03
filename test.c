@@ -59,19 +59,18 @@ int mem_alloc(bool* mem , int blocks_to_reserve)
 {
  int op1= 32; //mt7wata mn el na7itin
  int op2 = 32; //mt7awta mn wra bs
- int op3 = 32; //mt7awta mn 2odam bs
+
  bool check = true;
  bool check2 = true;
  bool check4 = true;
  bool check5 = true;
  int blocks = blocks_to_reserve;
-int i = 0;
 
-if(blocks_to_reserve==1)
+/*if(blocks_to_reserve==1)
     {
     int check3 = check_first_empty_location_if_odd(mem);
     if(check3 != -1){ return check3; }
-    }
+    }*/
 
 
 //while (blocks != 32)
