@@ -179,7 +179,7 @@ void AddWaitingMultiLevel(MultiLevel *m, Process *currentProcess)
     --currentProcess->Waiting_time;
 }
 
-void runMultiLevelProcess(Process **currentProcess, int currentLevel, int *Process_Semaphore, MultiLevel *m, int Time, FILE *processess_file, int *finishedProcessCount, int *total_waiting_time, float *total_WTA_time)
+void runMultiLevelProcess(Process **currentProcess, int currentLevel, int *Process_Semaphore, MultiLevel *m, int Time, FILE *processess_file, int *finishedProcessCount, int *total_waiting_time, float *total_WTA_time, bool *memory, FILE *processess_mem_file)
 {
     /*run_curr_process_logic*/
     printf("currProcess: %d, remaining time: %d\n", (*currentProcess)->Process_ID, (*currentProcess)->Remaining_time);
@@ -195,6 +195,8 @@ void runMultiLevelProcess(Process **currentProcess, int currentLevel, int *Proce
 
         /*Print finish process information*/
         PRINT_CURR_PROCESS((*currentProcess), Time + 1, processess_file);
+        mem_dealloc(memory, (*currentProcess)->no_of_blocks, (*currentProcess)->memindex);
+        PRINT_MEMORY_DEALLOC((*currentProcess), Time + 1, processess_mem_file);
         *total_waiting_time += (*currentProcess)->Waiting_time;
         *total_WTA_time += (*currentProcess)->W_TA;
 

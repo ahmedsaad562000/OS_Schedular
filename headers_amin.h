@@ -40,7 +40,9 @@ void Read_file(Process_List *LinkedList, char *FileName, int mode)
         proc->State = STOPPED;
         proc->memsize = ff[4];
         proc->memindex = -1;
-        proc->no_of_blocks = 0;
+
+        /*calculate no of blocks*/
+        proc->no_of_blocks=get_no_of_blocks(proc->memsize);
 
         /*Insert process into linked list*/
         Insert_Process(LinkedList, proc);

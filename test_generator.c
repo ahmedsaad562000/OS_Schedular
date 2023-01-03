@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
     scanf("%d", &no);
     srand(time(null));
     //fprintf(pFile,"%d\n",no);
-    fprintf(pFile, "#id arrival runtime priority\n");
+    fprintf(pFile, "#id arrival runtime priority memsize\n");
     pData.arrivaltime = 1;
     for (int i = 1; i <= no; i++)
     {

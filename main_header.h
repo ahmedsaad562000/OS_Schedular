@@ -152,14 +152,22 @@ int isMultiLevelEmpty(MultiLevel *m);
 int pushAllProcessBackToItsLevel(MultiLevel *m);
 Process *getNextProcessFromMultiLevel(MultiLevel *m, int *currentLevel);
 void AddWaitingMultiLevel(MultiLevel *m, Process *currentProcess);
-void runMultiLevelProcess(Process **currentProcess, int currentLevel, int *Process_Semaphore, MultiLevel *m, int Time, FILE *processess_file, int *finishedProcessCount , int *total_waiting_time , float *total_WTA_time);
+void runMultiLevelProcess(Process **currentProcess, int currentLevel, int *Process_Semaphore, MultiLevel *m, int Time, FILE *processess_file, int *finishedProcessCount, int *total_waiting_time, float *total_WTA_time, bool *memory, FILE *processess_mem_file);
 /*SJF*/
 void Add_waiting_SJF(Process_List *P_Queue);
-int RUN_CURR_PROCESS(struct Processes_Node *curr_Proc, int *Process_Semaphore, Process_List *P_Queue, int Time, FILE *processess_file);
 void COPY_then_DEQUEUE_HEAD(struct Processes_Node *curr_Proc, Process_List *P_Queue);
 /*Print*/
 void PRINT_CURR_PROCESS(Process *curr_Proc, int Time, FILE *processess_file);
 void Close_file(FILE *file);
 void Open_file_to_write(char *FileName, FILE *file);
+
+
+int get_no_of_blocks(int mem_size);
+int check_first_empty_location_if_odd(bool* mem);
+int get_first_place(bool* mem  ,int blocks_to_reserve);
+int mem_alloc(bool* mem , int blocks_to_reserve);
+void mem_dealloc(bool* mem, int blocks_to_free , int index);
+int RUN_CURR_PROCESS(struct Processes_Node *curr_Proc, int *Process_Semaphore, Process_List *P_Queue, int Time, FILE *processess_file, bool *memory, FILE *processess_mem_file);
+void PRINT_MEMORY_DEALLOC(Process *curr_Proc, int Time, FILE *processess_file);
 
 #endif
