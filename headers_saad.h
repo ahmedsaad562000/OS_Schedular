@@ -30,6 +30,7 @@ int RUN_CURR_PROCESS(struct Processes_Node *curr_Proc, int *Process_Semaphore, P
     }
     return 0;
 }
+
 void PRINT_CURR_PROCESS(Process *curr_Proc, int Time, FILE *processess_file)
 {
     static char *state[4] = {"started", "finished", "stopped", "resumed"};
@@ -50,6 +51,13 @@ void PRINT_CURR_PROCESS(Process *curr_Proc, int Time, FILE *processess_file)
     strcat(line_to_print, "\n");
     // printf(line_to_print);
     fputs(line_to_print, processess_file); // writing data into file
+}
+
+void PRINT_CURR_MEMORY(Process *curr_Proc, int Time, FILE *processess_file)
+{
+    static char *state[4] = {"started", "finished", "stopped", "resumed"};
+    char line_to_print[256];
+    // snprintf(line_to_print, 200, "At time %d allocated %d bytes %d for %d process %d from %d to %d", Time, curr_Proc->Process_ID, state[curr_Proc->State], curr_Proc->Arrival_time, curr_Proc->Running_time, curr_Proc->Remaining_time, curr_Proc->Waiting_time); // puts string into buffer
 }
 
 void COPY_then_DEQUEUE_HEAD(struct Processes_Node *curr_Proc, Process_List *P_Queue)
