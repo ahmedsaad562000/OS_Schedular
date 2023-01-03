@@ -17,8 +17,10 @@ int *semaphore_IDs; /*array of semaphore IDs where each process has a semaphore 
 
 /***********************FILES************************/
 FILE *processess_file;
+FILE *processess_mem_file;
 FILE *CPU_file;
 char Process_files_path[20] = "scheduler.log";
+char Process_mem_files_path[20] = "memory.log";
 char CPU_file_path[20] = "scheduler.perf";
 
 /*Round Robin Variables*/
@@ -69,7 +71,9 @@ int main(int argc, char *argv[])
     int x = getClk();
     cpu_waiting_time = x;
     processess_file = fopen(Process_files_path, "wt");
+    processess_mem_file = fopen(Process_mem_files_path, "wt");
     fputs("#At time x process state arr w total z remain y wait k\n", processess_file);
+    fputs("#At time x allocated y bytes for process from i to j\n", processess_mem_file);
 
     CPU_file = fopen(CPU_file_path, "wt");
 
@@ -273,6 +277,7 @@ int main(int argc, char *argv[])
                 printf("cpu_wainting_time= %d , curr_time = %d", cpu_waiting_time, follow);
                 fclose(CPU_file);
                 fclose(processess_file);
+                fclose(processess_mem_file);
 
                 kill(getppid(), SIGINT);
             }
@@ -615,6 +620,7 @@ void handler(int signum)
         fputs(line_to_print, CPU_file);
         fclose(CPU_file);
         fclose(processess_file);
+        fclose(processess_mem_file);
     }
     // printf("\nSCh: ana matt with CPU_WT = %d , TOTAL_WTA = %.2f, TOTAL_Processess_WT = %d \n", cpu_waiting_time, total_WTA_time, total_waiting_time);
     for (size_t i = 0; i < 8; i++)
