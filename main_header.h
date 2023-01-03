@@ -14,6 +14,7 @@
 #include <signal.h>
 #include <string.h>
 #include "Semaphore.h"
+#include <math.h>
 #define atoa(x) #x
 
 /**
