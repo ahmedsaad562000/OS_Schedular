@@ -97,6 +97,8 @@ typedef struct
     int Waiting_time;
     int Priority;
     int memsize;
+    int memindex;
+    int no_of_blocks;
     Process_States State;
 } Process;
 

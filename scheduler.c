@@ -133,7 +133,7 @@ int main(int argc, char *argv[])
 
                 if (rec_value != -1)
                 {
-                    printf("\n-----------Schedular_process_recieved with id: %d in time: %d\n", process_to_be_recieved.Process_Data.Process_ID, x);
+                    printf("\n-----------Schedular_process_recieved with id: %d in time: %d its memory\n", process_to_be_recieved.Process_Data.Process_ID, x);
 
                     /*Fork only if Schedular (Parent)*/
                     pid = fork();

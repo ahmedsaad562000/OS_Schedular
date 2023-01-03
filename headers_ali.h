@@ -148,7 +148,7 @@ int pushAllProcessBackToItsLevel(MultiLevel *m)
     while (!isPriorityQueueEmpty(&m->toBeReturnedToItsLevel))
     {
         Process *processData = peekIntoQueue(&m->toBeReturnedToItsLevel);
-        printf("proces id:%d process remaining time: %d prio: %d memsize: %d\n", processData->Process_ID, processData->Remaining_time, processData->Priority,processData->memsize);
+        printf("proces id:%d process remaining time: %d prio: %d memsize: %d\n", processData->Process_ID, processData->Remaining_time, processData->Priority, processData->memsize);
         pushIntoMultiLevel(m, processData);
         popFromQueue(&m->toBeReturnedToItsLevel);
     }
@@ -179,11 +179,11 @@ void AddWaitingMultiLevel(MultiLevel *m, Process *currentProcess)
     --currentProcess->Waiting_time;
 }
 
-void runMultiLevelProcess(Process **currentProcess, int currentLevel, int *Process_Semaphore, MultiLevel *m, int Time, FILE *processess_file, int *finishedProcessCount , int *total_waiting_time , float *total_WTA_time)
+void runMultiLevelProcess(Process **currentProcess, int currentLevel, int *Process_Semaphore, MultiLevel *m, int Time, FILE *processess_file, int *finishedProcessCount, int *total_waiting_time, float *total_WTA_time)
 {
     /*run_curr_process_logic*/
     printf("currProcess: %d, remaining time: %d\n", (*currentProcess)->Process_ID, (*currentProcess)->Remaining_time);
-    printf("proces id:%d process remaining time: %d prio: %d memsize: %d\n", (*currentProcess)->Process_ID, (*currentProcess)->Remaining_time, (*currentProcess)->Priority,(*currentProcess)->memsize);
+    printf("proces id:%d process remaining time: %d prio: %d memsize: %d\n", (*currentProcess)->Process_ID, (*currentProcess)->Remaining_time, (*currentProcess)->Priority, (*currentProcess)->memsize);
     int x = (*currentProcess)->Process_ID - 1;
     int y = (*currentProcess)->Remaining_time;
     AddWaitingMultiLevel(m, (*currentProcess)); /*Function to increase waiting time for not runing processes in ready queue*/
@@ -192,16 +192,15 @@ void runMultiLevelProcess(Process **currentProcess, int currentLevel, int *Proce
     if ((*currentProcess)->Remaining_time == 0)
     {
         (*currentProcess)->State = FINISHED;
- 
+
         /*Print finish process information*/
         PRINT_CURR_PROCESS((*currentProcess), Time + 1, processess_file);
-       *total_waiting_time += (*currentProcess)->Waiting_time;
+        *total_waiting_time += (*currentProcess)->Waiting_time;
         *total_WTA_time += (*currentProcess)->W_TA;
 
         popFromQueue(&m->listOfQueues[currentLevel]);
         *currentProcess = NULL;
         ++*finishedProcessCount;
-
     }
     if (y > 1)
         up(Process_Semaphore[x]);

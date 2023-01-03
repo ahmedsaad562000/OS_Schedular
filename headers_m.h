@@ -22,6 +22,9 @@ struct Processes_Node *Insert_Process(Process_List *Queue, Process *N)
     link->Process_Data.State = N->State;
     link->Process_Data.Priority = N->Priority;
     link->Process_Data.memsize = N->memsize;
+    link->Process_Data.memindex = N->memindex;
+    link->Process_Data.no_of_blocks = N->no_of_blocks;
+    
     // If head is empty, create new list
     if (Queue->front == NULL)
     {
@@ -52,6 +55,8 @@ struct Processes_Node *Insert_Circular_Queue(Process_List *Queue, Process *N)
     link->Process_Data.State = N->State;
     link->Process_Data.Priority = N->Priority;
     link->Process_Data.memsize = N->memsize;
+    link->Process_Data.memindex = N->memindex;
+    link->Process_Data.no_of_blocks = N->no_of_blocks;
 
     // If head is empty, create new list
     if (Queue->front == NULL)
