@@ -20,6 +20,7 @@ Memory.log: represnts memory operations (Allocated and Deallocated) for all proc
 - How to Run
 - Data Structures & Functions used
 - Scheduling ALgorithms
+
  -- Shortest Job First (SJF)
  -- Highest Priority First (HPF)
  -- Round Robin (RR)
