@@ -33,9 +33,9 @@ make run
 
 <h1> Data Structures & Functions </h1>
 
-<b>Normal Node</b>: To be used in all other data Structures
+<h3>Normal Node</h3>: To be used in all other data Structures
 
-<h4>Linked-list</h4>
+<h3>Linked-list</h3>
 
 It is used to save the processes in it after reading them from the file.
 
@@ -44,7 +44,7 @@ It is used to save the processes in it after reading them from the file.
 - InsertInto_LinnkedList: Insert a node at the end of the LinkedList.
 
 
-<h4>Queue</h4>
+<h3>Queue</h3>
 
 It is used with a multi-level algorithm where each level has a queue of processes to be run in that level.
 
@@ -54,7 +54,7 @@ It is used with a multi-level algorithm where each level has a queue of processe
 
 - Delete_From_Queue: Dequeue from the queue and free the node
 
-<h4>Circular Queue</h4>
+<h3>Circular Queue</h3>
 
 It is used with round-robin algorithms where the rear of the queue points to the beginning of it so when we reach the end we can return to the beginning so that we can 
 run the processes again.
@@ -65,7 +65,7 @@ run the processes again.
 
 - Delete_From_Circular: Delete a node from any position from the circular queue.
 
-<h4>Priority Queue</h4>
+<h3>Priority Queue</h3>
 
 It is used in HPF and SJF algorithms, it has a pointer to a node that points to the front of the queue that will be used to pop this node when it finishes its execution.
 
@@ -78,7 +78,7 @@ It is used in HPF and SJF algorithms, it has a pointer to a node that points to 
 - Is_empty_Queue: Check if the Priority queue is empty.
 
 
-<h4>Multilevel Queue</h4>
+<h3>Multilevel Queue</h3>
 
 It is a 2-D Queue of 11 levels where each is a queue and an extra buffer queue
 
