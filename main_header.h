@@ -17,6 +17,9 @@
 #include <math.h>
 #define atoa(x) #x
 
+
+
+
 /**
  * ======================= Variables ========================
  */
@@ -118,18 +121,14 @@ typedef struct
     struct Processes_Node *rear;
 } Process_List;
 
-// typedef struct
-// {
-//     /* Pointer to first in the Queue */
-//     struct Processes_Node *head;
-// } Priority_Process_List;
-
 typedef struct
 {
     Process_List listOfQueues[10];
     Process_List toBeReturnedToItsLevel;
 } MultiLevel;
 /*****************************************************************************/
+
+/**************************** Functions  **************************/
 
 /**************************** Functions Declarations **************************/
 
@@ -139,6 +138,8 @@ struct Processes_Node *Insert_Circular_Queue(Process_List *Queue, Process *N);
 
 /* Function to Delete from circular queue in RR Algorithm */
 void remove_From_Circular(Process_List *C_Queue, int id);
+
+
 
 /*Ali's functions*/
 Process *peekIntoPriorityQueue(Process_List *P_Queue);

@@ -1,6 +1,8 @@
 {
     "files.associations": {
         "signal.h": "c",
-        "headers_m.h": "c"
+        "headers_m.h": "c",
+        "headers_ali.h": "c",
+        "headers_saad.h": "c"
     }
 }

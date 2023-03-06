@@ -1,5 +1,7 @@
 #include "main_header.h"
 
+/**************************** Functions Definitions **************************/
+
 struct Processes_Node *newPriorityQueueNode(Process *N)
 {
     int priority = N->Priority;

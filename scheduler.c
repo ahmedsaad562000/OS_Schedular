@@ -37,7 +37,7 @@ int currentLevel = 0;
 int quantamsLeft = 0;
 MultiLevel m;
 Process *currentProcess;
-/**************************** Functions Declarations **************************/
+/*********************** Functions Declaratiions **************************/
 /*
 ******** Round Robin Algorithm functions *****
 */
