@@ -113,7 +113,7 @@ The SJF algorithm uses Priority Queue Data Structure which is sorted according t
 
 <h4>Output:</h4>
 
-![Process.txt](https://ibb.co/SvvL6kh)
+![Process](https://i.ibb.co/cTTmyWG/1-Output.png)
 
 
 # HPF
@@ -125,8 +125,8 @@ The HPF algorithm uses Priority Queue that rearranges the processes after each p
 
 <h4>Output:</h4>
 
-![Process.txt](https://ibb.co/GT4m8GX)
-![Process.txt](https://ibb.co/4VQr3JW)
+![https://ibb.co/GT4m8GX](https://i.ibb.co/3z9KjVw/2-1-out.png)
+![https://ibb.co/4VQr3JW](https://i.ibb.co/crmnVxJ/2-2-out.png)
 
 
 
@@ -145,8 +145,8 @@ When a process finishes its running time it is deleted from the ready circular q
 
 <h4>Output:</h4>
 
-![Process.txt](https://ibb.co/FJZrSQv)
-![Process.txt](https://ibb.co/Y29xxPs)
+![Process.txt](https://ibb.co/FJZrSQv)](https://i.ibb.co/wCGk9nH/3-1-out.png)
+![Process.txt](https://ibb.co/Y29xxPs)](https://i.ibb.co/Wn9LLGJ/3-2-out.png)
 
 
 
@@ -171,7 +171,7 @@ If a process is done, it is popped from its level and a new process is started w
 
 <h4>Output:</h4>
 
-![Process.txt](https://ibb.co/HnHDf69)
+![Process.txt](https://ibb.co/HnHDf69)](https://i.ibb.co/gzRMLNc/4-out.png)
 
 
 
