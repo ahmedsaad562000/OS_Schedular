@@ -76,7 +76,7 @@ Algorithms Explanations and Results
 <h2>All Scheduling Algorithms will run on on the following example:-</h2>
   
   
-![Process.txt](https://ibb.co/jhktnwf)
+![Process.txt](https://i.ibb.co/XXxHc5L/1-Input.png)
 
 SJF
 Explanation:
