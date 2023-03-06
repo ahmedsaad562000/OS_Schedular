@@ -52,7 +52,6 @@ for (int i = 0; i < 32; i = i+blocks_to_reserve)
     }
 
 }
-
 }
 
 int mem_alloc(bool* mem , int blocks_to_reserve)
@@ -65,7 +64,7 @@ int mem_alloc(bool* mem , int blocks_to_reserve)
  bool check4 = true;
  bool check5 = true;
  int blocks = blocks_to_reserve;
-
+int i = 0;
 /*if(blocks_to_reserve==1)
     {
     int check3 = check_first_empty_location_if_odd(mem);
@@ -73,13 +72,13 @@ int mem_alloc(bool* mem , int blocks_to_reserve)
     }*/
 
 
-//while (blocks != 32)
-//{
+while (blocks != 32)
+{
     /* code */
 
 
-    /*if(i==0){blocks = blocks_to_reserve;i++;}
-    else{blocks = blocks*2;i++;}*/
+    if(i==0){blocks = blocks_to_reserve;i++;}
+    else{blocks = blocks*2;i++;}
     if(blocks == 16){return get_first_place(mem ,blocks_to_reserve);}
     check2 = false;
 
@@ -174,15 +173,19 @@ int mem_alloc(bool* mem , int blocks_to_reserve)
 
     if(op1==32 && op2==32){return get_first_place(mem ,blocks_to_reserve);}
     else
-        { int best =  (op1>op2)?op2:op1;
+        {
+            if(i>1)
+            {
+             int best =  (op1>op2)?op2:op1;
             for (int i = best; i < best+blocks_to_reserve; i++)
             {
                 mem[i]=true;
             }
             return best;
+            }
         }
     /* code */
-//}
+}
 
 
 
@@ -192,10 +195,10 @@ int mem_alloc(bool* mem , int blocks_to_reserve)
 int main()
 {
     int ex[6];
-    ex[0] = 128;
-    ex[1] = 256;
-    ex[2] = 512;
-    ex[3] = 256;
+    ex[0] = 64;
+    ex[1] = 512;
+    ex[2] = 128;
+    ex[3] = 32;
     ex[4] = 128;
     ex[5] = 16;  
     
@@ -261,7 +264,7 @@ int main()
         }
         printf("\n");
 //////////////////////////////////////////////////////////////////
-for (int i = indexes[2]; i < indexes[2]+no_blocks[2]; i++)
+/*for (int i = indexes[2]; i < indexes[2]+no_blocks[2]; i++)
 {
     mem[i]=false;
 }
@@ -270,13 +273,13 @@ for (int i = indexes[2]; i < indexes[2]+no_blocks[2]; i++)
         {
             printf("%d ", mem[j]);
         }
-        printf("\n");
+        printf("\n");*/
 //////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////
         no_blocks[4] = get_no_of_blocks(ex[4]);
         //printf("\nex[%d] requires %d blocks\n" , i ,no_blocks);
         
-        indexes[3] = mem_alloc(mem ,no_blocks[4]);
+        indexes[4] = mem_alloc(mem ,no_blocks[4]);
         printf("memory content is: \n");
         for (int j = 0; j < 32; j++)
         {

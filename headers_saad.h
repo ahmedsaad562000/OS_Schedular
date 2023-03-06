@@ -133,12 +133,13 @@ int get_first_place(bool *mem, int blocks_to_reserve)
             return i;
         }
     }
+    return -1;
 }
 
 int mem_alloc(bool *mem, int blocks_to_reserve)
 {
-    int op1 = 32; // mt7wata mn el na7itin
-    int op2 = 32; // mt7awta mn wra bs
+    int op1 = 32; 
+    int op2 = 32; 
 
     bool check = true;
     bool check2 = true;
@@ -146,22 +147,11 @@ int mem_alloc(bool *mem, int blocks_to_reserve)
     bool check5 = true;
     int blocks = blocks_to_reserve;
 
-    /*if(blocks_to_reserve==1)
-        {
-        int check3 = check_first_empty_location_if_odd(mem);
-        if(check3 != -1){ return check3; }
-        }*/
-
-    // while (blocks != 32)
-    //{
-    /* code */
-
-    /*if(i==0){blocks = blocks_to_reserve;i++;}
-    else{blocks = blocks*2;i++;}*/
     if (blocks == 16)
     {
         return get_first_place(mem, blocks_to_reserve);
     }
+    if (blocks_to_reserve == 1){return get_first_place(mem , blocks_to_reserve);}
     check2 = false;
 
     for (int j = 0; j < 32; j = j + blocks) // try to find empty (blocks_to_reserve) which is reserved from both sides
