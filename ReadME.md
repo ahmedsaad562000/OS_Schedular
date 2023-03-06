@@ -8,7 +8,7 @@ Output is generated in 3 files :-
 
 <b>Schedular.log:</b> represents the full scenario of all states of any process (Started, Stopped, Resumed, Finished) at any time.
 
-<b>Memory.log:</b> represnts memory operations (Allocated and Deallocated) for all processess during the simulation.
+<b>Memory.log:</b> represnts memory operations (Allocated and Freed) for all processess during the simulation.
 
 
 
