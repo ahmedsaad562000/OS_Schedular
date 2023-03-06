@@ -38,8 +38,10 @@ make run
 <h4>Linked-list</h4>
 
 It is used to save the processes in it after reading them from the file.
-Functions used with this data structure are
-InsertInto_LinnkedList: Insert a node at the end of the LinkedList.
+
+<b>Functions used with this data structure are:</b>
+
+- InsertInto_LinnkedList: Insert a node at the end of the LinkedList.
 
 
 <h4>Queue</h4>
@@ -48,9 +50,9 @@ It is used with a multi-level algorithm where each level has a queue of processe
 
 <b>Functions used with this data structure are:</b>
 
-Insert_Into_Queue: Insert node at the beginning of the queue.
+- Insert_Into_Queue: Insert node at the beginning of the queue.
 
-Delete_From_Queue: Dequeue from the queue and free the node
+- Delete_From_Queue: Dequeue from the queue and free the node
 
 <h4>Circular Queue</h4>
 
@@ -59,24 +61,25 @@ run the processes again.
 
 <b>Functions used with this data structure are:</b>
 
-<b>InsertInto_CircularQueue:</b> Insert a node at the end of the circular queue.
+- InsertInto_CircularQueue: Insert a node at the end of the circular queue.
 
-<b>Delete_From_Circular:</b> Delete a node from any position from the circular queue.
+- Delete_From_Circular: Delete a node from any position from the circular queue.
 
-<h3>Priority Queue</h3>
+<h4>Priority Queue</h4>
 
 It is used in HPF and SJF algorithms, it has a pointer to a node that points to the front of the queue that will be used to pop this node when it finishes its execution.
 
 <b>Functions of Data structure:</b>
 
-<b>insert_to_priority_queue:</b> Insert the incoming process to the correct position.
+- insert_to_priority_queue: Insert the incoming process to the correct position.
 
-<b>Pop_from_priority_queue:</b> Delete the node at the front of the Queue.
+- Pop_from_priority_queue: Delete the node at the front of the Queue.
 
-<b>Is_empty_Queue:</b> Check if the Priority queue is empty.
+- Is_empty_Queue: Check if the Priority queue is empty.
 
 
 <h4>Multilevel Queue</h4>
+
 It is a 2-D Queue of 11 levels where each is a queue and an extra buffer queue
 
 <b>Functions used with this data structure are:</b>
