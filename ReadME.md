@@ -20,12 +20,13 @@ Memory.log: represnts memory operations (Allocated and Deallocated) for all proc
 - How to Run
 - Data Structures & Functions used
 - Scheduling ALgorithms
+<ul>
+  - Shortest Job First (SJF)
+  - Highest Priority First (HPF)
+  - Round Robin (RR)
+  - Multilivel Feedback Loop (MLFL)
+</ul>
 
- -- Shortest Job First (SJF)
- -- Highest Priority First (HPF)
- -- Round Robin (RR)
- -- Multilivel Feedback Loop (MLFL)
- 
 # Run
 You can use Makefile to build and run your project
 
