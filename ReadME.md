@@ -33,7 +33,9 @@ make run
 
 <h1> Data Structures & Functions </h1>
 
-<h3>Normal Node</h3>: To be used in all other data Structures
+<h3>Normal Node</h3>
+
+To be used in all other data Structures.
 
 <h3>Linked-list</h3>
 
